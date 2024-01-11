@@ -1,3 +1,5 @@
+using DominosDriverHustleComp.Services;
+
 namespace DominosDriverHustleComp
 {
     public class Program
@@ -8,6 +10,8 @@ namespace DominosDriverHustleComp
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+
+            builder.Services.AddHostedService<GPSService>();
 
             var app = builder.Build();
 
