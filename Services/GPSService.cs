@@ -1,4 +1,8 @@
-﻿using LaunchDarkly.EventSource;
+﻿using DominosDriverHustleComp.Models;
+
+using LaunchDarkly.EventSource;
+
+using System.Text.Json;
 
 namespace DominosDriverHustleComp.Services
 {
@@ -6,6 +10,15 @@ namespace DominosDriverHustleComp.Services
     {
         private readonly EventSource _sseClient;
         private readonly ILogger<GPSService> _logger;
+        static private readonly JsonSerializerOptions serializerOptions;
+
+        static GPSService()
+        {
+            serializerOptions = new()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+        }
 
         public GPSService(ILogger<GPSService> logger)
         {
@@ -47,7 +60,22 @@ namespace DominosDriverHustleComp.Services
 
         private void HandleEvent(MessageReceivedEventArgs e)
         {
-            //
+            _logger.LogTrace("{name} | {data}", e.EventName, e.Message.Data);
+
+            if (e.EventName != "DRIVER_UPDATED")
+                return;
+
+            var update = JsonSerializer.Deserialize<DriverUpdate>(e.Message.Data, serializerOptions);
+
+            if (
+                update == null ||
+                !update.HeightenedTimeAwareness.DispatchAt.HasValue ||
+                !update.HeightenedTimeAwareness.LeftStoreAt.HasValue ||
+                !update.HeightenedTimeAwareness.StoreEnterAt.HasValue ||
+                !update.HeightenedTimeAwareness.InAt.HasValue)
+                return;
+
+            ///@TODO store data
         }
     }
 }
