@@ -45,6 +45,10 @@ namespace DominosDriverHustleComp.Services
 
             _sseClient = new EventSource(conf.Build());
             _sseClient.MessageReceived += (sender, e) => HandleEvent(e);
+            _sseClient.Error += (sender, e) => {
+                _logger.LogError("{message}", e.Exception.Message);
+                _sseClient.Close();
+            };
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
