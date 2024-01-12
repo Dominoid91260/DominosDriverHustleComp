@@ -1,4 +1,7 @@
+using DominosDriverHustleComp.Data;
 using DominosDriverHustleComp.Services;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace DominosDriverHustleComp
 {
@@ -10,10 +13,16 @@ namespace DominosDriverHustleComp
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-
+            builder.Services.AddDbContext<HustleCompContext>();
             builder.Services.AddHostedService<GPSService>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+                context.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

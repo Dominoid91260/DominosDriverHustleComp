@@ -1,4 +1,5 @@
-﻿using DominosDriverHustleComp.Models;
+﻿using DominosDriverHustleComp.Data;
+using DominosDriverHustleComp.Models;
 
 using LaunchDarkly.EventSource;
 
@@ -10,6 +11,8 @@ namespace DominosDriverHustleComp.Services
     {
         private readonly EventSource _sseClient;
         private readonly ILogger<GPSService> _logger;
+        private readonly IServiceProvider _serviceProvider;
+
         static private readonly JsonSerializerOptions serializerOptions;
 
         static GPSService()
@@ -20,9 +23,10 @@ namespace DominosDriverHustleComp.Services
             };
         }
 
-        public GPSService(ILogger<GPSService> logger)
+        public GPSService(ILogger<GPSService> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
 
             var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
 
@@ -44,7 +48,7 @@ namespace DominosDriverHustleComp.Services
             });
 
             _sseClient = new EventSource(conf.Build());
-            _sseClient.MessageReceived += (sender, e) => HandleEvent(e);
+            _sseClient.MessageReceived += async (sender, e) => await HandleEvent(e);
             _sseClient.Error += (sender, e) => {
                 _logger.LogError("{message}", e.Exception.Message);
                 _sseClient.Close();
@@ -62,7 +66,7 @@ namespace DominosDriverHustleComp.Services
             return Task.CompletedTask;
         }
 
-        private void HandleEvent(MessageReceivedEventArgs e)
+        private async Task HandleEvent(MessageReceivedEventArgs e)
         {
             _logger.LogTrace("{name} | {data}", e.EventName, e.Message.Data);
 
@@ -79,7 +83,33 @@ namespace DominosDriverHustleComp.Services
                 !update.HeightenedTimeAwareness.InAt.HasValue)
                 return;
 
-            ///@TODO store data
+            var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+
+            var driver = await context.Drivers.FindAsync(update.DriverId);
+            if (driver == null)
+            {
+                var entry = await context.Drivers.AddAsync(new()
+                {
+                    Id = update.DriverId,
+                    FirstName = update.FirstName,
+                    LastName = update.LastName,
+                    Deliveries = new List<DeliveryRecord>()
+                });
+
+                driver = entry.Entity;
+
+                await context.SaveChangesAsync();
+            }
+
+            await context.Deliveries.AddAsync(new()
+            {
+                Driver = driver,
+                DispatchedAt = update.HeightenedTimeAwareness.DispatchAt.Value,
+                LeftStoreAt = update.HeightenedTimeAwareness.LeftStoreAt.Value,
+                StoreEnteredAt = update.HeightenedTimeAwareness.StoreEnterAt.Value,
+                InAt = update.HeightenedTimeAwareness.InAt.Value,
+            });
         }
     }
 }
