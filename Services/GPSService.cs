@@ -7,9 +7,8 @@ using System.Text.Json;
 
 namespace DominosDriverHustleComp.Services
 {
-    public class GPSService : IHostedService
+    public class GPSService : BackgroundService
     {
-        private readonly EventSource _sseClient;
         private readonly ILogger<GPSService> _logger;
         private readonly IServiceProvider _serviceProvider;
 
@@ -27,37 +26,6 @@ namespace DominosDriverHustleComp.Services
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-
-            var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
-
-            conf.RequestHeaders(new Dictionary<string, string>(){
-                { "dpz-market", "AUSTRALIA" },
-                { "dpz-language", "en" },
-            });
-
-            var envAuthKey = Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
-            if (envAuthKey != null)
-            {
-                conf.RequestHeader("authorization", envAuthKey);
-            }
-
-            _sseClient = new EventSource(conf.Build());
-            _sseClient.MessageReceived += async (sender, e) => await HandleEvent(e);
-            _sseClient.Error += (sender, e) => {
-                _logger.LogError("{message}", e.Exception.Message);
-                _sseClient.Close();
-            };
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            return _sseClient.StartAsync();
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _sseClient.Close();
-            return Task.CompletedTask;
         }
 
         private async Task HandleEvent(MessageReceivedEventArgs e)
@@ -106,6 +74,35 @@ namespace DominosDriverHustleComp.Services
             });
 
             await context.SaveChangesAsync();
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
+
+            conf.RequestHeaders(new Dictionary<string, string>(){
+                { "dpz-market", "AUSTRALIA" },
+                { "dpz-language", "en" },
+            });
+
+            var envAuthKey = Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
+            if (envAuthKey != null)
+            {
+                conf.RequestHeader("authorization", envAuthKey);
+            }
+
+            var sseClient = new EventSource(conf.Build());
+            sseClient = new EventSource(conf.Build());
+            sseClient.MessageReceived += async (sender, e) => await HandleEvent(e);
+            sseClient.Error += (sender, e) => {
+                _logger.LogError("{message}", e.Exception.Message);
+                sseClient.Close();
+            };
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await sseClient.StartAsync();
+            }
         }
     }
 }
