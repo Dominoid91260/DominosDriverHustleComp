@@ -30,16 +30,16 @@ namespace DominosDriverHustleComp.Services
 
             var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
 
+            conf.RequestHeaders(new Dictionary<string, string>(){
+                { "dpz-market", "AUSTRALIA" },
+                { "dpz-language", "en" },
+            });
+
             var envAuthKey = Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
             if (envAuthKey != null)
             {
                 conf.RequestHeader("authorization", envAuthKey);
             }
-
-            conf.RequestHeaders(new Dictionary<string, string>(){
-                { "dpz-market", "AUSTRALIA" },
-                { "dpz-language", "en" },
-            });
 
             _sseClient = new EventSource(conf.Build());
             _sseClient.MessageReceived += async (sender, e) => await HandleEvent(e);
