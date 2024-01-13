@@ -110,6 +110,8 @@ namespace DominosDriverHustleComp.Services
                 StoreEnteredAt = update.HeightenedTimeAwareness.StoreEnterAt.Value,
                 InAt = update.HeightenedTimeAwareness.InAt.Value,
             });
+
+            await context.SaveChangesAsync();
         }
     }
 }
