@@ -20,3 +20,50 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/************************/
+
+.table {
+    font-family: 'Roboto', sans-serif;
+}
+
+div.table {
+    display: flex;
+    flex-direction: column;
+}
+
+div.table-row {
+    display: flex;
+    border-left: 1px solid #666;
+}
+
+    div.table-row:nth-child(odd) {
+        border-top: 1px solid #666;
+    }
+
+    div.table-row:nth-child(odd),
+    div.table-row:last-of-type {
+        border-bottom: 1px solid #666;
+    }
+
+.table-header {
+    font-weight: bold;
+}
+
+.table-cell {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #666;
+    padding: 2px 5px 2px 5px;
+}
+
+.hcname {
+    justify-content: left;
+}
+
+.hctime {
+    font-family: 'Space Mono', monospace;
+    font-style: normal;
+}

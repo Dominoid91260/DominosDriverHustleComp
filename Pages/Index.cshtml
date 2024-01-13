@@ -2,9 +2,82 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var data = Model.Drivers ?? Enumerable.Empty<IndexModel.DriverViewModel>();
+
+    // Add "Average" result
+    if (data.Any())
+    {
+        data = data.Append(new()
+        {
+            IsSpecialResult = true,
+            Name = "Average",
+            AvgHustleOut = TimeSpan.FromSeconds(data.Select(d => d.AvgHustleOut.TotalSeconds).Average()),
+            AvgHustleIn = TimeSpan.FromSeconds(data.Select(d => d.AvgHustleIn.TotalSeconds).Average())
+        });
+    }
+
+    // Sort data in ascending order by average combined
+    data = data.OrderBy(d => d.AvgHustleCombined);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="table w-50 m-auto">
+    <div class="table-row">
+        <div class="table-cell w-100">Hustle Comp W.E</div>
+    </div>
+
+    <div class="table-row table-header">
+        <div class="table-cell col-3">Name</div>
+        <div class="table-cell">Hustle Out</div>
+        <div class="table-cell">Hustle In</div>
+        <div class="table-cell">Combined</div>
+    </div>
+
+    @foreach (var result in data)
+    {
+        <div class="table-row @GetTableRowClass(result)">
+            <div class="table-cell col-3 hcname">@result.Name</div>
+            <div class="table-cell hctime @GetTableCellClass(result, result.AvgHustleOut)">@result.AvgHustleOut.ToString(@"mm\:ss")</div>
+            <div class="table-cell hctime @GetTableCellClass(result, result.AvgHustleIn)">@result.AvgHustleIn.ToString(@"mm\:ss")</div>
+            <div class="table-cell hctime @GetTableCellClass(result, result.AvgHustleCombined)">@result.AvgHustleCombined.ToString(@"mm\:ss")</div>
+        </div>
+    }
 </div>
+
+@{
+    // How many seconds is considered "Good" hustle? Any combined less than this is a "winner"
+    const int GoodHustleSeconds = 3 * 60;
+
+    const int MinDels = 0;// 10;
+
+    const string avgClass = "alert-warning";
+    const string dqClass = "alert-secondary";
+    const string winClass = "alert-primary";
+    const string goodHustle = "alert-success";
+    const string badHustle = "alert-danger";
+
+    string GetTableRowClass(IndexModel.DriverViewModel Result)
+    {
+        if (Result.IsSpecialResult)
+            return avgClass + " fw-bold";
+
+        if (Result.NumDels < MinDels)
+            return dqClass;
+
+        if (Result.AvgHustleCombined.TotalSeconds < GoodHustleSeconds)
+            return winClass;
+
+        return string.Empty;
+    }
+
+    string GetTableCellClass(IndexModel.DriverViewModel Result, TimeSpan Time)
+    {
+        if (
+            Result.IsSpecialResult || // "Average" result
+            Result.AvgHustleCombined.TotalSeconds < GoodHustleSeconds || // Winner is already highlighted, dont override the cells
+            Result.NumDels < MinDels // Disqualified
+        )
+            return string.Empty;
+
+        return Time.TotalSeconds <= GoodHustleSeconds ? goodHustle : badHustle;
+    }
+}
