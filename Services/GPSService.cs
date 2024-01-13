@@ -30,12 +30,6 @@ namespace DominosDriverHustleComp.Services
 
             var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
 
-            var envApiKey = Environment.GetEnvironmentVariable("DPZ_API_KEY");
-            if (envApiKey != null)
-            {
-                conf.RequestHeader("dpz-api-key", envApiKey);
-            }
-
             var envAuthKey = Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
             if (envAuthKey != null)
             {
