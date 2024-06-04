@@ -3,6 +3,7 @@ using System;
 using DominosDriverHustleComp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DominosDriverHustleComp.Migrations
 {
     [DbContext(typeof(HustleCompContext))]
-    partial class HustleCompContextModelSnapshot : ModelSnapshot
+    [Migration("20240116221714_AddedNullableInOutDeliveryTimes")]
+    partial class AddedNullableInOutDeliveryTimes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");

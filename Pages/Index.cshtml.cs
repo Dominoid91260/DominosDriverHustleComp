@@ -43,8 +43,8 @@ namespace DominosDriverHustleComp.Pages
                     {
                         Name = g.Key.FirstName + " " + g.Key.LastName,
                         NumDels = g.Count(),
-                        AvgHustleOut = TimeSpan.FromSeconds(Math.Floor(g.Select(d => (d.LeftStoreAt - d.DispatchedAt).TotalSeconds).Average())),
-                        AvgHustleIn = TimeSpan.FromSeconds(Math.Floor(g.Select(d => (d.InAt - d.StoreEnteredAt).TotalSeconds).Average()))
+                        AvgHustleOut = TimeSpan.FromSeconds(Math.Floor(g.Where(d => d.LeftStoreAt.HasValue).Select(d => (d.LeftStoreAt - d.DispatchedAt).Value.TotalSeconds).DefaultIfEmpty(0).Average())),
+                        AvgHustleIn = TimeSpan.FromSeconds(Math.Floor(g.Where(d => d.StoreEnteredAt.HasValue).Select(d => (d.InAt - d.StoreEnteredAt).Value.TotalSeconds).DefaultIfEmpty(0).Average()))
                     });
             }
         }

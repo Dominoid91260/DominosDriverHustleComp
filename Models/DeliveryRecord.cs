@@ -12,8 +12,8 @@ namespace DominosDriverHustleComp.Models
         public required Driver Driver { get; set; }
 
         public DateTime DispatchedAt { get; set; }
-        public DateTime LeftStoreAt { get; set; }
-        public DateTime StoreEnteredAt { get; set; }
+        public DateTime? LeftStoreAt { get; set; }
+        public DateTime? StoreEnteredAt { get; set; }
         public DateTime InAt { get; set; }
     }
 }

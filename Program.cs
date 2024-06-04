@@ -11,10 +11,21 @@ namespace DominosDriverHustleComp
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+
+#if DEBUG
+            builder.Logging.AddDebug();
+#endif // DEBUG
+
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddDbContext<HustleCompContext>();
-            builder.Services.AddHostedService<GPSService>();
+            builder.Services.AddSingleton<GPSService>();
+            builder.Services.AddSingleton<IHostedService, GPSService>(serviceProvider => serviceProvider.GetService<GPSService>());
+            //builder.Services.AddHostedService<DummyGPSService>();
+            builder.Services.AddSingleton<DeliveryTrackerService>();
 
             var app = builder.Build();
 
@@ -40,6 +51,11 @@ namespace DominosDriverHustleComp
             app.UseAuthorization();
 
             app.MapRazorPages();
+
+            app.MapGet("/gpstoken", (string bearerToken, GPSService gpsService) =>
+            {
+                gpsService.BearerToken = bearerToken;
+            });
 
             app.Run();
         }
