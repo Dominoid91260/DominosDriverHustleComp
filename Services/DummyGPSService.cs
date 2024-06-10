@@ -59,7 +59,7 @@ namespace DominosDriverHustleComp.Services
             if (update.DriverStatus == DriverStatus.In || update.HeightenedTimeAwareness.InAt.HasValue)
             {
                 using var scope = _serviceProvider.CreateScope();
-                using var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+                var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
                 var driver = context.Drivers.Find(update.DriverId);
 
                 _logger.LogWarning("Finishing delivery by driver {first} {last}", driver?.FirstName, driver?.LastName);
