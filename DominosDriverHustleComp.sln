@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominosDriverHustleComp", "DominosDriverHustleComp.csproj", "{1D10559E-69F2-4108-A715-D922D58CA0B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominosDriverHustleComp.Server", "Server\DominosDriverHustleComp.Server.csproj", "{6959361D-77A3-4DAE-B33C-DB790C5DF39F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominosDriverHustleComp.Client", "Client\DominosDriverHustleComp.Client.csproj", "{9CD95C1D-CB0C-4EDD-AC8B-7DD8850D2C27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominosDriverHustleComp.Shared", "Shared\DominosDriverHustleComp.Shared.csproj", "{9773E0DF-8FF1-410E-9274-507B210E7A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1D10559E-69F2-4108-A715-D922D58CA0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D10559E-69F2-4108-A715-D922D58CA0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D10559E-69F2-4108-A715-D922D58CA0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D10559E-69F2-4108-A715-D922D58CA0B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6959361D-77A3-4DAE-B33C-DB790C5DF39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6959361D-77A3-4DAE-B33C-DB790C5DF39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6959361D-77A3-4DAE-B33C-DB790C5DF39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6959361D-77A3-4DAE-B33C-DB790C5DF39F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CD95C1D-CB0C-4EDD-AC8B-7DD8850D2C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CD95C1D-CB0C-4EDD-AC8B-7DD8850D2C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CD95C1D-CB0C-4EDD-AC8B-7DD8850D2C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CD95C1D-CB0C-4EDD-AC8B-7DD8850D2C27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9773E0DF-8FF1-410E-9274-507B210E7A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9773E0DF-8FF1-410E-9274-507B210E7A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9773E0DF-8FF1-410E-9274-507B210E7A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9773E0DF-8FF1-410E-9274-507B210E7A65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
