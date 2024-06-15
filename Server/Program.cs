@@ -1,4 +1,6 @@
 
+using DominosDriverHustleComp.Server.Services;
+
 namespace DominosDriverHustleComp.Server
 {
     public class Program
@@ -15,6 +17,8 @@ namespace DominosDriverHustleComp.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddHostedService<GPSDashboardService>();
 
             var app = builder.Build();
 
