@@ -17,8 +17,20 @@ namespace DominosDriverHustleComp.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://gps-dashboard.dominos.com.au")
+                    .AllowAnyHeader()
+                    .WithMethods("POST")
+                    .AllowCredentials();
+                });
+            });
 
             builder.Services.AddHostedService<GPSDashboardService>();
+            builder.Services.AddHostedService((sp) => sp.GetRequiredService<GPSSSEService>());
+            builder.Services.AddSingleton<GPSSSEService>();
 
             var app = builder.Build();
 
@@ -41,6 +53,7 @@ namespace DominosDriverHustleComp.Server
             app.UseStaticFiles();
 
             app.UseAuthorization();
+            app.UseCors();
 
             app.MapRazorPages();
             app.MapControllers();

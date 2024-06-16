@@ -73,7 +73,14 @@ function sendAuthToken() {
     if (token == null)
         return;
 
-    ///@TODO send token
+    fetch(server + "/api/AuthToken", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ bearerToken: "Bearer " + token })
+    })
 }
 
 function route() {
