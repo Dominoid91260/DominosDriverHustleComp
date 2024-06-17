@@ -101,3 +101,9 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+.leaderboard
+{
+    font-variant-numeric: tabular-nums;
+    overflow: scroll;
+}

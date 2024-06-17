@@ -1,7 +1,67 @@
 ﻿@page "/"
+@using DominosDriverHustleComp.Shared.ViewModels
+@using System.Timers
+@inject HttpClient Http
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Leaderboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container">
+    <h2 class="text-center">Driver Leaderboard</h2>
 
-Welcome to your new app.
+    <table class="table leaderboard">
+        <thead>
+            <tr>
+                <th>Driver</th>
+                <th class="text-center">Hustle Out</th>
+                <th class="text-center">Hustle In</th>
+                <th class="text-center">Combined</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (_leaderboardData is null || !_leaderboardData.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No deliveries</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var data in _leaderboardData.OrderBy(x => x.AvgHustleOut + x.AvgHustleIn))
+                {
+                    var combinedSpan = TimeSpan.FromSeconds(data.AvgHustleOut + data.AvgHustleIn);
+
+                    <tr>
+                        <td>@data.FirstName @data.LastName</td>
+                        <td class="text-center">@TimeSpan.FromSeconds(data.AvgHustleOut).ToString(@"mm\:ss")</td>
+                        <td class="text-center">@TimeSpan.FromSeconds(data.AvgHustleIn).ToString(@"mm\:ss")</td>
+                        <td class="text-center">@combinedSpan.ToString(@"mm\:ss")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code{
+    private Timer FetchTimer = new();
+    private IEnumerable<LeaderboardHustle>? _leaderboardData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchLeaderboardData();
+
+        FetchTimer.AutoReset = true;
+        FetchTimer.Interval = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+        FetchTimer.Elapsed += async (object? sender, ElapsedEventArgs e) =>
+        {
+            await FetchLeaderboardData();
+        };
+        FetchTimer.Start();
+    }
+
+    private async Task FetchLeaderboardData()
+    {
+        _leaderboardData = await Http.GetFromJsonAsync<IEnumerable<LeaderboardHustle>>("/api/HustleLeaderboard");
+        StateHasChanged();
+    }
+}
