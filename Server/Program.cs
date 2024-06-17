@@ -31,6 +31,7 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddHostedService<GPSDashboardService>();
             builder.Services.AddHostedService((sp) => sp.GetRequiredService<GPSSSEService>());
             builder.Services.AddSingleton<GPSSSEService>();
+            builder.Services.AddSingleton<HustleTracker>();
 
             var app = builder.Build();
 

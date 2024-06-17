@@ -8,14 +8,17 @@ namespace DominosDriverHustleComp.Server.Services
     public class GPSSSEService : BackgroundService
     {
         private readonly ILogger<GPSSSEService> _logger;
+        private readonly HustleTracker _hustleTracker;
         private EventSource? _sseClient;
         private JsonSerializerOptions _serializerOptions;
 
         public string? BearerToken { get; set; }
 
-        public GPSSSEService(ILogger<GPSSSEService> logger)
+        public GPSSSEService(ILogger<GPSSSEService> logger, HustleTracker hustleTracker)
         {
             _logger = logger;
+            _hustleTracker = hustleTracker;
+
             _serializerOptions = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -93,7 +96,12 @@ namespace DominosDriverHustleComp.Server.Services
 
         private void ProcessDriverUpdate(DriverUpdate update)
         {
-            ///@TODO implement
+            if (update == null ||
+                update.DriverStatus != DriverStatus.In ||
+                update.HeightenedTimeAwareness is null)
+                return;
+
+            _hustleTracker.StoreHustleData(update);
         }
     }
 }
