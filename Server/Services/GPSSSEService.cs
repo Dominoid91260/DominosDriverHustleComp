@@ -1,4 +1,7 @@
-﻿using LaunchDarkly.EventSource;
+﻿using DominosDriverHustleComp.Server.Models.GPS;
+using LaunchDarkly.EventSource;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DominosDriverHustleComp.Server.Services
 {
@@ -6,12 +9,18 @@ namespace DominosDriverHustleComp.Server.Services
     {
         private readonly ILogger<GPSSSEService> _logger;
         private EventSource? _sseClient;
+        private JsonSerializerOptions _serializerOptions;
 
         public string? BearerToken { get; set; }
 
         public GPSSSEService(ILogger<GPSSSEService> logger)
         {
             _logger = logger;
+            _serializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -61,6 +70,28 @@ namespace DominosDriverHustleComp.Server.Services
         }
 
         private void HandleEvent(string eventName, string data)
+        {
+            if (eventName == "DRIVERS_CURRENT_STATE")
+            {
+                var updates = JsonSerializer.Deserialize<IEnumerable<DriverUpdate>>(data, _serializerOptions);
+                foreach (var update in updates)
+                {
+                    ProcessDriverUpdate(update);
+                }
+            }
+            else if (eventName == "DRIVER_UPDATED")
+            {
+                var update = JsonSerializer.Deserialize<DriverUpdate>(data, _serializerOptions);
+                ProcessDriverUpdate(update);
+            }
+            else if (eventName == "STORE_UPDATED")
+            {
+                var update = JsonSerializer.Deserialize<StoreUpdate>(data, _serializerOptions);
+                ///@TODO implement
+            }
+        }
+
+        private void ProcessDriverUpdate(DriverUpdate update)
         {
             ///@TODO implement
         }
