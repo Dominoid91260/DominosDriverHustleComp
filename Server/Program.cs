@@ -1,5 +1,7 @@
 
+using DominosDriverHustleComp.Server.Data;
 using DominosDriverHustleComp.Server.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace DominosDriverHustleComp.Server
 {
@@ -32,8 +34,15 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddHostedService((sp) => sp.GetRequiredService<GPSSSEService>());
             builder.Services.AddSingleton<GPSSSEService>();
             builder.Services.AddSingleton<HustleTracker>();
+            builder.Services.AddDbContext<HustleCompContext>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+                context.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
