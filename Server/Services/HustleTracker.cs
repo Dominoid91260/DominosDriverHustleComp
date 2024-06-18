@@ -1,4 +1,6 @@
-﻿using DominosDriverHustleComp.Server.Models.GPS;
+﻿using DominosDriverHustleComp.Server.Data;
+using DominosDriverHustleComp.Server.Models;
+using DominosDriverHustleComp.Server.Models.GPS;
 using DominosDriverHustleComp.Shared.ViewModels;
 
 namespace DominosDriverHustleComp.Server.Services
@@ -18,8 +20,15 @@ namespace DominosDriverHustleComp.Server.Services
 
     public class HustleTracker
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public StoreLocation StoreLocation { get; set; }
         private Dictionary<int, DriverHustleData> DriverHustle = [];
+
+        public HustleTracker(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         public void StoreHustleData(DriverUpdate update)
         {
@@ -51,6 +60,32 @@ namespace DominosDriverHustleComp.Server.Services
                     HustleData = [ data ]
                 });
             }
+
+            var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+
+            var driver = context.Drivers.Find(update.DriverId);
+
+            if (driver is null)
+            {
+                var entry = context.Drivers.Add(new Driver
+                {
+                    Id = update.DriverId,
+                    FirstName = update.FirstName,
+                    LastName = update.LastName
+                });
+
+                driver = entry.Entity;
+            }
+
+            context.Deliveries.Add(new Delivery
+            {
+                Driver = driver,
+                AvgHustleOut = data.HustleOut,
+                AvgHustleIn = data.HustleIn
+            });
+
+            context.SaveChanges();
         }
 
         public IEnumerable<LeaderboardHustle> GetLeaderboardData()
