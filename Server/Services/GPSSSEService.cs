@@ -8,16 +8,17 @@ namespace DominosDriverHustleComp.Server.Services
     public class GPSSSEService : BackgroundService
     {
         private readonly ILogger<GPSSSEService> _logger;
-        private readonly HustleTracker _hustleTracker;
+        private readonly IServiceProvider _serviceProvider;
+
         private EventSource? _sseClient;
         private JsonSerializerOptions _serializerOptions;
 
         public string? BearerToken { get; set; }
 
-        public GPSSSEService(ILogger<GPSSSEService> logger, HustleTracker hustleTracker)
+        public GPSSSEService(ILogger<GPSSSEService> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _hustleTracker = hustleTracker;
+            _serviceProvider = serviceProvider;
 
             _serializerOptions = new JsonSerializerOptions
             {
@@ -101,7 +102,9 @@ namespace DominosDriverHustleComp.Server.Services
                 update.HeightenedTimeAwareness is null)
                 return;
 
-            _hustleTracker.StoreHustleData(update);
+            var scope = _serviceProvider.CreateScope();
+            var hustleTracker = scope.ServiceProvider.GetRequiredService<HustleTracker>();
+            hustleTracker.StoreHustleData(update);
         }
     }
 }
