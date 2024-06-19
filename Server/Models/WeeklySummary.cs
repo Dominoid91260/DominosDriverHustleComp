@@ -1,13 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DominosDriverHustleComp.Server.Models
 {
     public class WeeklySummary
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         [Key]
         public DateTime WeekEnding { get; set; }
 

@@ -5,13 +5,12 @@ namespace DominosDriverHustleComp.Server.Models
 {
     public class DeliverySummary
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Key]
         public Driver Driver { get; set; }
 
-        [Key]
         public DateTime WeekEnding { get; set; }
 
         public float AvgHustleOut { get; set; }
