@@ -35,6 +35,7 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddSingleton<GPSSSEService>();
             builder.Services.AddSingleton<HustleTracker>();
             builder.Services.AddDbContext<HustleCompContext>();
+            builder.Services.AddSingleton<ReportGeneratorService>();
 
             var app = builder.Build();
 
@@ -42,6 +43,15 @@ namespace DominosDriverHustleComp.Server
             {
                 var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
                 context.Database.Migrate();
+            }
+
+            // Generate weekly database entries
+            var now = DateTime.Now;
+            if (now.DayOfWeek == DayOfWeek.Monday)
+            {
+                using var scope = app.Services.CreateScope();
+                var generator = scope.ServiceProvider.GetRequiredService<ReportGeneratorService>();
+                generator.GenerateReports();
             }
 
             // Configure the HTTP request pipeline.
