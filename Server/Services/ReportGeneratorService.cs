@@ -8,6 +8,7 @@ namespace DominosDriverHustleComp.Server.Services
     public class ReportGeneratorService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<ReportGeneratorService> _logger;
 
         private DateTime _weekEnding;
 
@@ -17,15 +18,22 @@ namespace DominosDriverHustleComp.Server.Services
             public IEnumerable<Delivery> Deliveries { get; set; }
         }
 
-        public ReportGeneratorService(IServiceProvider serviceProvider)
+        public ReportGeneratorService(IServiceProvider serviceProvider, ILogger<ReportGeneratorService> logger)
         {
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         private void GenerateDeliverySummaries()
         {
             var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
+
+            if (!context.Deliveries.Any())
+            {
+                _logger.LogWarning("No deliveries, skip generating delivery summaries...");
+                return;
+            }
 
             var grouped = context.Deliveries.Include(d => d.Driver).GroupBy(d => d.Driver).Select(g => new GroupedModel
             {
@@ -58,6 +66,13 @@ namespace DominosDriverHustleComp.Server.Services
             var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
 
             var deliverySummaries = context.DeliverySummaries.Where(ds => ds.WeekEnding  == _weekEnding);
+
+            if (deliverySummaries is null || !deliverySummaries.Any())
+            {
+                _logger.LogWarning("No delivery summaries for {weekEnding}, skip generating weekly summary.", _weekEnding.ToString("d"));
+                return;
+            }
+
             var avgOut = deliverySummaries.Average(ds => ds.AvgHustleOut);
             var avgIn = deliverySummaries.Average(ds => ds.AvgHustleIn);
             var avgCombined = deliverySummaries.Average(ds => ds.AvgHustleCombined);
