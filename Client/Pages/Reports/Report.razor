@@ -58,15 +58,13 @@
                         }
                     }
 
-                    var outSpan = TimeSpan.FromSeconds(record.AvgOut);
-                    var inSpan = TimeSpan.FromSeconds(record.AvgIn);
-                    var combSpan = TimeSpan.FromSeconds(combined);
+                    var timeStrings = GetRecordStrings(record);
 
                     <tr class="@trClass">
                         <td>@record.Name</td>
-                        <td class="text-center @outClass">@outSpan.ToString(@"mm\:ss")</td>
-                        <td class="text-center @inClass">@inSpan.ToString(@"mm\:ss")</td>
-                        <td class="text-center">@combSpan.ToString(@"mm\:ss")</td>
+                        <td class="text-center @outClass">@timeStrings.ThisWeek.Out@timeStrings.LastWeek.Out</td>
+                        <td class="text-center @inClass">@timeStrings.ThisWeek.In@timeStrings.LastWeek.In</td>
+                        <td class="text-center">@timeStrings.ThisWeek.Combined@timeStrings.LastWeek.Combined</td>
                         @{ /* <td>@record.NumOverspeeds</td> */ }
                     </tr>
                 }
@@ -84,6 +82,26 @@
     ///@TODO make these configurable
     private TimeSpan _benchmark = new TimeSpan(0, 1, 20);
     private TimeSpan _outlier = TimeSpan.FromSeconds(10); // How far from the combined average is someone considered an outlier?
+
+    private struct TimeStrings
+    {
+        public string Out { get; set; }
+        public string In { get; set; }
+        public string Combined { get; set; }
+
+        public TimeStrings()
+        {
+            Out = string.Empty;
+            In = string.Empty;
+            Combined = string.Empty;
+        }
+    }
+
+    private class RecordStrings
+    {
+        public TimeStrings ThisWeek;
+        public TimeStrings LastWeek;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,5 +137,47 @@
             return "alert-danger";
 
         return "alert-success";
+    }
+
+    private RecordStrings GetRecordStrings(ReportRecord record)
+    {
+        var combined = record.AvgOut + record.AvgIn;
+        var strings = new RecordStrings
+        {
+            ThisWeek = new TimeStrings
+            {
+                Out = TimeSpan.FromSeconds(record.AvgOut).ToString(@"mm\:ss"),
+                In = TimeSpan.FromSeconds(record.AvgIn).ToString(@"mm\:ss"),
+                Combined = TimeSpan.FromSeconds(combined).ToString(@"mm\:ss")
+            }
+        };
+
+        if (record.PreviousWeekStats is null)
+            return strings;
+
+        // Preformat time strings from last week so we can use them directly in the table output
+        // This will show the time difference for each time (in/out/combined).
+
+        var diffOut = record.AvgOut - record.PreviousWeekStats.AvgOut;
+        var diffIn = record.AvgIn - record.PreviousWeekStats.AvgIn;
+        var lastComb = record.PreviousWeekStats.AvgOut + record.PreviousWeekStats.AvgIn;
+        var diffComb = combined - lastComb;
+
+        var diffOutStr = TimeSpan.FromSeconds(Math.Abs(diffOut)).ToString(@"mm\:ss");
+        var diffInStr = TimeSpan.FromSeconds(Math.Abs(diffIn)).ToString(@"mm\:ss");
+        var diffCombStr = TimeSpan.FromSeconds(Math.Abs(diffComb)).ToString(@"mm\:ss");
+
+        var outSign = diffOut < 0 ? '-' : '+';
+        var inSign = diffIn < 0 ? '-' : '+';
+        var combSign = diffComb < 0 ? '-' : '+';
+
+        strings.LastWeek = new TimeStrings
+        {
+            Out = $" ({outSign}{diffOutStr})",
+            In = $" ({inSign}{diffInStr})",
+            Combined = $" ({combSign}{diffCombStr})"
+        };
+
+        return strings;
     }
 }

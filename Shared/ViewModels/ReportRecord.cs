@@ -8,6 +8,7 @@
         public int NumOverspeeds { get; set; } = 0;
         public int WinStreak { get; set; } = 0;
         public int Outlier { get; set; } = 0;
+        public PreviousWeekStats? PreviousWeekStats { get; set; }
 
         /// <summary>
         /// Only used by the `Report` component.
