@@ -1,0 +1,17 @@
+﻿/* these rules exist purely because bootstrap has a table rule which takes precendence over their alert rules */
+
+td.alert-success {
+    background-color: #d1e7dd; /* bootstrap alert-success background-color */
+}
+
+td.alert-warning {
+    background-color: #fff3cd; /* bootstrap alert-warning background-color */
+}
+
+td.alert-primary {
+    background-color:#cfe2ff; /* bootstrap alert-primary background-color */
+}
+
+td.alert-danger {
+    background-color: #f8d7da; /* bootstrap alert-danger background-color */
+}

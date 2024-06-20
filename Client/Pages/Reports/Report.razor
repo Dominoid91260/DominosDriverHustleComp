@@ -1,0 +1,123 @@
+﻿@page "/report/{weekEnding:datetime}"
+@using DominosDriverHustleComp.Shared.ViewModels
+@inject HttpClient Http
+
+<PageTitle>Report Week Ending @WeekEnding.ToString("d")</PageTitle>
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="4" class="text-center">Hustle Comp Week Ending @WeekEnding.ToString("d")</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th class="text-center">Hustle Out</th>
+                <th class="text-center">Hustle In</th>
+                <th class="text-center">Hustle Combined</th>
+                @{ /* <th>Overspeeds</th> */ }
+            </tr>
+        </thead>
+        <tbody>
+            @if (_records is null)
+            {
+                <td colspan="4" class="text-center">Loading...</td>
+            }
+            else if (_records.Count == 0)
+            {
+                <td colspan="4" class="text-center">No records</td>
+            }
+            else
+            {
+                foreach (var record in _records.OrderBy(r => r.AvgOut + r.AvgIn))
+                {
+                    var combined = record.AvgOut + record.AvgIn;
+
+                    var trClass = string.Empty;
+                    var outClass = string.Empty;
+                    var inClass = string.Empty;
+
+                    if (record.IsAverageRecord)
+                    {
+                        trClass = "alert-warning";
+                    }
+                    else
+                    {
+                        // the benchmark is for a single time (in or out).
+                        // combined is both, so double it.
+                        var isWinner = combined < _benchmark.TotalSeconds * 2;
+
+                        if (isWinner)
+                        {
+                            trClass = "alert-primary";
+                        }
+                        else
+                        {
+                            outClass = GetCellClassForInOutTime(record.AvgOut);
+                            inClass = GetCellClassForInOutTime(record.AvgIn);
+                        }
+                    }
+
+                    var outSpan = TimeSpan.FromSeconds(record.AvgOut);
+                    var inSpan = TimeSpan.FromSeconds(record.AvgIn);
+                    var combSpan = TimeSpan.FromSeconds(combined);
+
+                    <tr class="@trClass">
+                        <td>@record.Name</td>
+                        <td class="text-center @outClass">@outSpan.ToString(@"mm\:ss")</td>
+                        <td class="text-center @inClass">@inSpan.ToString(@"mm\:ss")</td>
+                        <td class="text-center">@combSpan.ToString(@"mm\:ss")</td>
+                        @{ /* <td>@record.NumOverspeeds</td> */ }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public DateTime WeekEnding { get; set; }
+
+    private List<ReportRecord>? _records = null;
+
+    ///@TODO make these configurable
+    private TimeSpan _benchmark = new TimeSpan(0, 1, 20);
+    private TimeSpan _outlier = TimeSpan.FromSeconds(10); // How far from the combined average is someone considered an outlier?
+
+    protected override async Task OnInitializedAsync()
+    {
+        var records = await Http.GetFromJsonAsync<IEnumerable<ReportRecord>>($"/api/Reports/{WeekEnding.ToString("s")}");
+
+        if (records is null || !records.Any())
+        {
+            _records = [];
+            return;
+        }
+
+        _records = records.ToList();
+        InjectAverageRecord();
+    }
+
+    private void InjectAverageRecord()
+    {
+        var avgOut = _records.Average(r => r.AvgOut);
+        var avgIn = _records.Average(r => r.AvgIn);
+
+        _records.Add(new ReportRecord
+        {
+            Name = "Average",
+            AvgOut = avgOut,
+            AvgIn = avgIn,
+            IsAverageRecord = true
+        });
+    }
+
+    private string GetCellClassForInOutTime(float seconds)
+    {
+        if (seconds > _benchmark.TotalSeconds)
+            return "alert-danger";
+
+        return "alert-success";
+    }
+}
