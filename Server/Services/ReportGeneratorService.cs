@@ -57,6 +57,10 @@ namespace DominosDriverHustleComp.Server.Services
                 });
             }
 
+            // The deliveries table is designed to only store deliveries for a single week.
+            // Once the delivery summaries are created we no longer need to keep the deliveries
+            // so truncate the table.
+            context.Deliveries.ExecuteDelete();
             context.SaveChanges();
         }
 
