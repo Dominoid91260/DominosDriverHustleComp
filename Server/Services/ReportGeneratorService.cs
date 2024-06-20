@@ -77,6 +77,16 @@ namespace DominosDriverHustleComp.Server.Services
                 return;
             }
 
+            // This should rarely ever happen but will crash the server if it does.
+            // This mostly covers the situation where the server is restarted on the same day
+            // that reports are generated (Monday)
+            var existing = context.WeeklySummaries.Where(ws => ws.WeekEnding == _weekEnding);
+            if (existing is not null && existing.Any())
+            {
+                _logger.LogError("Weekly summary already exists for {weekEnding}, skipping", _weekEnding.ToString("d"));
+                return;
+            }
+
             var avgOut = deliverySummaries.Average(ds => ds.AvgHustleOut);
             var avgIn = deliverySummaries.Average(ds => ds.AvgHustleIn);
             var avgCombined = deliverySummaries.Average(ds => ds.AvgHustleCombined);
