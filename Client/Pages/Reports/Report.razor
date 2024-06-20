@@ -60,8 +60,24 @@
 
                     var timeStrings = GetRecordStrings(record);
 
+                    var winStreakStr = string.Empty;
+                    var outlierStreakStr = string.Empty;
+
+                    ///@TODO replace these with badges
+                    if (record.WinStreak > 1)
+                    {
+                        var range = Enumerable.Range(0, record.WinStreak).Select(_ => "\U0001f3ce\uFE0F"); // racecar
+                        winStreakStr = string.Join(null, range);
+                    }
+
+                    if (record.Outlier > 1)
+                    {
+                        var range = Enumerable.Range(0, record.Outlier).Select(_ => "\U0001F40C"); // snail
+                        outlierStreakStr = string.Join(null, range);
+                    }
+
                     <tr class="@trClass">
-                        <td>@record.Name</td>
+                        <td>@record.Name @winStreakStr @outlierStreakStr</td>
                         <td class="text-center @outClass">@timeStrings.ThisWeek.Out@timeStrings.LastWeek.Out</td>
                         <td class="text-center @inClass">@timeStrings.ThisWeek.In@timeStrings.LastWeek.In</td>
                         <td class="text-center">@timeStrings.ThisWeek.Combined@timeStrings.LastWeek.Combined</td>
