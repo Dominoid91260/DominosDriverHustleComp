@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DominosDriverHustleComp.Server.Models
 {
@@ -10,5 +11,8 @@ namespace DominosDriverHustleComp.Server.Models
         public float AvgHustleOut { get; set; }
         public float AvgHustleIn { get; set; }
         public float AvgHustleCombined { get; set; }
+
+        [ForeignKey("WeekEnding")]
+        public IEnumerable<DeliverySummary> DeliverySummaries { get; set; }
     }
 }

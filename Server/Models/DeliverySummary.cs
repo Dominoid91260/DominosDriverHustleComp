@@ -12,9 +12,7 @@ namespace DominosDriverHustleComp.Server.Models
         public int Id { get; set; }
 
         public Driver Driver { get; set; }
-
         public DateTime WeekEnding { get; set; }
-
         public float AvgHustleOut { get; set; }
         public float AvgHustleIn { get; set; }
         public float AvgHustleCombined { get; set; }
