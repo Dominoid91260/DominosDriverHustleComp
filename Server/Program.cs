@@ -51,7 +51,7 @@ namespace DominosDriverHustleComp.Server
             {
                 using var scope = app.Services.CreateScope();
                 var generator = scope.ServiceProvider.GetRequiredService<ReportGeneratorService>();
-                generator.GenerateReports();
+                generator.GenerateSummaries();
             }
 
             // Configure the HTTP request pipeline.

@@ -69,11 +69,11 @@ namespace DominosDriverHustleComp.Server.Services
             var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<HustleCompContext>();
 
-            var deliverySummaries = context.DeliverySummaries.Where(ds => ds.WeekEnding  == _weekEnding);
+            var deliveries = context.Deliveries.AsEnumerable();
 
-            if (deliverySummaries is null || !deliverySummaries.Any())
+            if (deliveries is null || !deliveries.Any())
             {
-                _logger.LogWarning("No delivery summaries for {weekEnding}, skip generating weekly summary.", _weekEnding.ToString("d"));
+                _logger.LogWarning("No deliveries, skip generating weekly summary.");
                 return;
             }
 
@@ -87,9 +87,9 @@ namespace DominosDriverHustleComp.Server.Services
                 return;
             }
 
-            var avgOut = deliverySummaries.Average(ds => ds.AvgHustleOut);
-            var avgIn = deliverySummaries.Average(ds => ds.AvgHustleIn);
-            var avgCombined = deliverySummaries.Average(ds => ds.AvgHustleCombined);
+            var avgOut = deliveries.Average(d => d.AvgHustleOut);
+            var avgIn = deliveries.Average(d => d.AvgHustleIn);
+            var avgCombined = avgOut + avgIn;
 
             context.WeeklySummaries.Add(new WeeklySummary
             {
@@ -102,14 +102,18 @@ namespace DominosDriverHustleComp.Server.Services
             context.SaveChanges();
         }
 
-        public void GenerateReports()
+        public void GenerateSummaries()
         {
             var now = DateTime.Now;
             var lastSunday = now.AddDays(-(int)now.DayOfWeek);
             _weekEnding = lastSunday.Date;
 
-            GenerateDeliverySummaries();
+            // Generate the weekly summary before we save changes otherwise
+            // there will be no week-ending to match our foreign key to
+            // and the delivery summaries will fail to insert.
             GenerateWeeklySummary();
+
+            GenerateDeliverySummaries();
         }
     }
 }
