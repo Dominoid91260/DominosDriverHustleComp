@@ -75,6 +75,10 @@ namespace DominosDriverHustleComp.Server.Services
 
         public void GenerateReports()
         {
+            var now = DateTime.Now;
+            var lastSunday = now.AddDays(-(int)now.DayOfWeek);
+            _weekEnding = lastSunday.Date;
+
             GenerateDeliverySummaries();
             GenerateWeeklySummary();
         }
