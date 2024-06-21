@@ -41,7 +41,7 @@
 
                     if (record.IsAverageRecord)
                     {
-                        trClass = "alert-warning";
+                        trClass = "table-warning";
                     }
                     else
                     {
@@ -51,7 +51,7 @@
 
                         if (isWinner)
                         {
-                            trClass = "alert-primary";
+                            trClass = "table-primary";
                         }
                         else
                         {
@@ -154,9 +154,9 @@
     private string GetCellClassForInOutTime(float seconds)
     {
         if (seconds > Settings.HustleBenchmarkSeconds)
-            return "alert-danger";
+            return "table-danger";
 
-        return "alert-success";
+        return "table-success";
     }
 
     private RecordStrings GetRecordStrings(ReportRecord record)
