@@ -1,6 +1,8 @@
 ﻿@page "/report/{weekEnding:datetime}"
+@using DominosDriverHustleComp.Client.Services
 @using DominosDriverHustleComp.Shared.ViewModels
 @inject HttpClient Http
+@inject SettingsService Settings
 
 <PageTitle>Report Week Ending @WeekEnding.ToString("d")</PageTitle>
 
@@ -45,7 +47,7 @@
                     {
                         // the benchmark is for a single time (in or out).
                         // combined is both, so double it.
-                        var isWinner = combined < _benchmark.TotalSeconds * 2;
+                        var isWinner = combined < Settings.HustleBenchmarkSeconds * 2;
 
                         if (isWinner)
                         {
@@ -94,10 +96,6 @@
     public DateTime WeekEnding { get; set; }
 
     private List<ReportRecord>? _records = null;
-
-    ///@TODO make these configurable
-    private TimeSpan _benchmark = new TimeSpan(0, 1, 20);
-    private TimeSpan _outlier = TimeSpan.FromSeconds(10); // How far from the combined average is someone considered an outlier?
 
     private struct TimeStrings
     {
@@ -149,7 +147,7 @@
 
     private string GetCellClassForInOutTime(float seconds)
     {
-        if (seconds > _benchmark.TotalSeconds)
+        if (seconds > Settings.HustleBenchmarkSeconds)
             return "alert-danger";
 
         return "alert-success";

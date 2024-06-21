@@ -1,3 +1,4 @@
+using DominosDriverHustleComp.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -12,8 +13,13 @@ namespace DominosDriverHustleComp.Client
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddSingleton<SettingsService>();
 
-            await builder.Build().RunAsync();
+            var app = builder.Build();
+
+            await app.Services.GetRequiredService<SettingsService>().FetchSettings();
+
+            await app.RunAsync();
         }
     }
 }

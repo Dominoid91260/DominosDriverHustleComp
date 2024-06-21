@@ -22,5 +22,6 @@ namespace DominosDriverHustleComp.Server.Data
         public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<DeliverySummary> DeliverySummaries { get; set; }
         public DbSet<WeeklySummary> WeeklySummaries { get; set; }
+        public DbSet<Settings> Settings { get; set; }
     }
 }

@@ -90,9 +90,7 @@ namespace DominosDriverHustleComp.Server.Controllers
             var currentDelSummary = driver.WeeklySummaries.First(ds => ds.WeekEnding == from);
             var currentWeeklySummary = _context.WeeklySummaries.Find(from);
 
-            ///@TODO make these configurable
-            const float benchmarkSeconds = 160; // this is combined benchmark so make sure its 2x in/out
-            const float outlier = 10;
+            var settings = _context.Settings.First();
 
             // Include the requested week in the search, this way a 1 week win will be 1 streak.
             // We can handle displaying this on the client by checking if the streak is 1
@@ -101,17 +99,17 @@ namespace DominosDriverHustleComp.Server.Controllers
             if (!delSummaries.Any())
                 return default;
 
-            bool bCountingWins = currentDelSummary.AvgHustleCombined < benchmarkSeconds;
+            bool bCountingWins = currentDelSummary.AvgHustleCombined < settings.HustleBenchmarkSeconds;
             int wins = 0;
 
-            bool bCountingOutliers = currentDelSummary.AvgHustleCombined >= currentWeeklySummary.AvgHustleCombined + outlier;
+            bool bCountingOutliers = currentDelSummary.AvgHustleCombined >= currentWeeklySummary.AvgHustleCombined + settings.OutlierSeconds;
             int outliers = 0;
 
             foreach (var ds in delSummaries.OrderByDescending(ds => ds.WeekEnding))
             {
                 var weeklySummary = _context.WeeklySummaries.Find(ds.WeekEnding);
 
-                if (ds.AvgHustleCombined >= benchmarkSeconds)
+                if (ds.AvgHustleCombined >= settings.HustleBenchmarkSeconds)
                 {
                     bCountingWins = false;
                 }
@@ -120,7 +118,7 @@ namespace DominosDriverHustleComp.Server.Controllers
                     wins++;
                 }
 
-                if (ds.AvgHustleCombined < weeklySummary.AvgHustleCombined + outlier)
+                if (ds.AvgHustleCombined < weeklySummary.AvgHustleCombined + settings.OutlierSeconds)
                 {
                     bCountingOutliers = false;
                 }
