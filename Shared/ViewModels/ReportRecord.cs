@@ -5,6 +5,7 @@
         public string Name { get; set; }
         public float AvgOut { get; set; }
         public float AvgIn { get; set;}
+        public int NumDels { get; set; }
         public int NumOverspeeds { get; set; } = 0;
         public int WinStreak { get; set; } = 0;
         public int Outlier { get; set; } = 0;

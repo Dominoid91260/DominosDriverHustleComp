@@ -1,7 +1,6 @@
 ﻿using DominosDriverHustleComp.Server.Data;
 using DominosDriverHustleComp.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace DominosDriverHustleComp.Server.Services
 {
@@ -53,7 +52,8 @@ namespace DominosDriverHustleComp.Server.Services
                     WeekEnding = _weekEnding,
                     AvgHustleOut = avgOut,
                     AvgHustleIn = avgIn,
-                    AvgHustleCombined = combined
+                    AvgHustleCombined = combined,
+                    NumDels = grouped.Count()
                 });
             }
 

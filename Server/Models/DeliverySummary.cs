@@ -16,5 +16,6 @@ namespace DominosDriverHustleComp.Server.Models
         public float AvgHustleOut { get; set; }
         public float AvgHustleIn { get; set; }
         public float AvgHustleCombined { get; set; }
+        public int NumDels { get; set; }
     }
 }

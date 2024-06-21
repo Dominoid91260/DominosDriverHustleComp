@@ -60,6 +60,12 @@
                         }
                     }
 
+                    // Disqualified
+                    if (record.NumDels < Settings.MinDels && !record.IsAverageRecord)
+                    {
+                        trClass += " text-decoration-line-through";
+                    }
+
                     var timeStrings = GetRecordStrings(record);
 
                     var winStreakStr = string.Empty;
