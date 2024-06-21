@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DominosDriverHustleComp.Server.Services
 {
-    public class ReportGeneratorService
+    public class SummaryGeneratorService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ReportGeneratorService> _logger;
+        private readonly ILogger<SummaryGeneratorService> _logger;
 
         private DateTime _weekEnding;
 
@@ -17,7 +17,7 @@ namespace DominosDriverHustleComp.Server.Services
             public IEnumerable<Delivery> Deliveries { get; set; }
         }
 
-        public ReportGeneratorService(IServiceProvider serviceProvider, ILogger<ReportGeneratorService> logger)
+        public SummaryGeneratorService(IServiceProvider serviceProvider, ILogger<SummaryGeneratorService> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;

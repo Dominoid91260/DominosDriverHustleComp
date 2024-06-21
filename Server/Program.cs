@@ -35,7 +35,7 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddSingleton<GPSSSEService>();
             builder.Services.AddSingleton<HustleTracker>();
             builder.Services.AddDbContext<HustleCompContext>();
-            builder.Services.AddSingleton<ReportGeneratorService>();
+            builder.Services.AddSingleton<SummaryGeneratorService>();
 
             var app = builder.Build();
 
@@ -50,7 +50,7 @@ namespace DominosDriverHustleComp.Server
             if (now.DayOfWeek == DayOfWeek.Monday)
             {
                 using var scope = app.Services.CreateScope();
-                var generator = scope.ServiceProvider.GetRequiredService<ReportGeneratorService>();
+                var generator = scope.ServiceProvider.GetRequiredService<SummaryGeneratorService>();
                 generator.GenerateSummaries();
             }
 
