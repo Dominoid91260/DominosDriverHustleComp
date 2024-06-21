@@ -15,7 +15,7 @@
 }
 else
 {
-    foreach (var reportWE in _reports)
+    foreach (var reportWE in _reports.OrderDescending())
     {
         <a href="/report/@(reportWE.ToString("s"))" class="nav-link text-center">Week Ending @reportWE.ToString("d")</a>
     }
