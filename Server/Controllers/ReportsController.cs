@@ -41,7 +41,7 @@ namespace DominosDriverHustleComp.Server.Controllers
             var weeklySummary = await _context.WeeklySummaries
                 .Include(ws => ws.DeliverySummaries)
                 .ThenInclude(ds => ds.Driver)
-                .ThenInclude(d => d.WeeklySummaries)
+                .ThenInclude(d => d.DeliverySummaries)
                 .FirstOrDefaultAsync(ws => ws.WeekEnding == weekEnding);
 
             if (weeklySummary is null)
@@ -66,10 +66,10 @@ namespace DominosDriverHustleComp.Server.Controllers
 
         private static PreviousWeekStats? GetPreviousStatsForDriver(Driver driver, DateTime from)
         {
-            if (!driver.WeeklySummaries.Any())
+            if (!driver.DeliverySummaries.Any())
                 return null;
 
-            var prevSummaries = driver.WeeklySummaries.Where(ds => ds.WeekEnding < from);
+            var prevSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding < from);
 
             if (!prevSummaries.Any())
                 return null;
@@ -85,17 +85,17 @@ namespace DominosDriverHustleComp.Server.Controllers
 
         private Streaks GetStreaksForDriver(Driver driver, DateTime from)
         {
-            if (!driver.WeeklySummaries.Any())
+            if (!driver.DeliverySummaries.Any())
                 return default;
 
-            var currentDelSummary = driver.WeeklySummaries.First(ds => ds.WeekEnding == from);
+            var currentDelSummary = driver.DeliverySummaries.First(ds => ds.WeekEnding == from);
             var currentWeeklySummary = _context.WeeklySummaries.Find(from);
 
             var settings = _context.Settings.First();
 
             // Include the requested week in the search, this way a 1 week win will be 1 streak.
             // We can handle displaying this on the client by checking if the streak is 1
-            var delSummaries = driver.WeeklySummaries.Where(ds => ds.WeekEnding <= from);
+            var delSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding <= from);
 
             if (!delSummaries.Any())
                 return default;

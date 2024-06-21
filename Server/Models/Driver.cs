@@ -7,6 +7,6 @@
         public string LastName { get; set; }
 
         public virtual IEnumerable<Delivery> Deliveries { get; set; }
-        public virtual IEnumerable<DeliverySummary> WeeklySummaries { get; set; }
+        public virtual IEnumerable<DeliverySummary> DeliverySummaries { get; set; }
     }
 }
