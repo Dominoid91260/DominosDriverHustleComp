@@ -60,7 +60,8 @@ namespace DominosDriverHustleComp.Server.Controllers
                     TrackedPercentage = ds.TrackedPercentage,
                     PreviousWeekStats = GetPreviousStatsForDriver(ds.Driver, ds.WeekEnding),
                     WinStreak = streaks.WinStreak,
-                    Outlier = streaks.OutlierStreak
+                    Outlier = streaks.OutlierStreak,
+                    IsDriverDisqualified = ds.Driver.IsPermanentlyDisqualified
                 };
             });
         }

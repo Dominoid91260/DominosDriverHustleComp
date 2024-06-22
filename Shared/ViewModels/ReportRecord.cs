@@ -11,6 +11,7 @@
         public int WinStreak { get; set; } = 0;
         public int Outlier { get; set; } = 0;
         public PreviousWeekStats? PreviousWeekStats { get; set; }
+        public bool IsDriverDisqualified { get; set; } = false;
 
         /// <summary>
         /// Only used by the `Report` component.
