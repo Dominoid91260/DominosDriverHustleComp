@@ -1,7 +1,7 @@
-
 using DominosDriverHustleComp.Server.Data;
 using DominosDriverHustleComp.Server.Services;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace DominosDriverHustleComp.Server
 {
@@ -36,6 +36,8 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddSingleton<HustleTracker>();
             builder.Services.AddDbContext<HustleCompContext>();
             builder.Services.AddSingleton<SummaryGeneratorService>();
+            builder.Services.AddSingleton<ScreenshotService>();
+            builder.Services.AddSendGrid(options => options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY"));
 
             var app = builder.Build();
 
@@ -52,6 +54,9 @@ namespace DominosDriverHustleComp.Server
                 using var scope = app.Services.CreateScope();
                 var generator = scope.ServiceProvider.GetRequiredService<SummaryGeneratorService>();
                 generator.GenerateSummaries();
+
+                var screenshot = scope.ServiceProvider.GetRequiredService<ScreenshotService>();
+                screenshot.ScreenshotReport(DateTime.Now.AddDays(-1), CancellationToken.None);
             }
 
             // Configure the HTTP request pipeline.
