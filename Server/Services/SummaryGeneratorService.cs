@@ -42,9 +42,16 @@ namespace DominosDriverHustleComp.Server.Services
 
             foreach (var group in grouped)
             {
-                var avgOut = group.Deliveries.Average(d => d.AvgHustleOut);
-                var avgIn = group.Deliveries.Average(d => d.AvgHustleIn);
+                // If theres no tracked deliveries, treat it as if they didnt take any deliveries
+                var trackedDels = group.Deliveries.Where(d => d.WasTracked);
+
+                if (!trackedDels.Any())
+                    continue;
+
+                var avgOut = trackedDels.Average(d => d.AvgHustleOut);
+                var avgIn = trackedDels.Average(d => d.AvgHustleIn);
                 var combined = avgOut + avgIn;
+                var numDels = group.Deliveries.Count();
 
                 context.DeliverySummaries.Add(new DeliverySummary
                 {
@@ -53,7 +60,8 @@ namespace DominosDriverHustleComp.Server.Services
                     AvgHustleOut = avgOut,
                     AvgHustleIn = avgIn,
                     AvgHustleCombined = combined,
-                    NumDels = group.Deliveries.Count()
+                    NumDels = numDels,
+                    TrackedPercentage = group.Deliveries.Count(d => d.WasTracked) / numDels
                 });
             }
 

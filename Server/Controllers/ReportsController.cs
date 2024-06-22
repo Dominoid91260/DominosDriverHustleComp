@@ -57,6 +57,7 @@ namespace DominosDriverHustleComp.Server.Controllers
                     AvgOut = ds.AvgHustleOut,
                     AvgIn = ds.AvgHustleIn,
                     NumDels = ds.NumDels,
+                    TrackedPercentage = ds.TrackedPercentage,
                     PreviousWeekStats = GetPreviousStatsForDriver(ds.Driver, ds.WeekEnding),
                     WinStreak = streaks.WinStreak,
                     Outlier = streaks.OutlierStreak

@@ -10,5 +10,6 @@ namespace DominosDriverHustleComp.Server.Models
         public Driver Driver { get; set; }
         public float AvgHustleOut { get; set; }
         public float AvgHustleIn { get; set; }
+        public bool WasTracked { get; set; }
     }
 }

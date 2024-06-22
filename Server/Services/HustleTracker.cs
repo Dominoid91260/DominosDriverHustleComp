@@ -32,33 +32,54 @@ namespace DominosDriverHustleComp.Server.Services
 
         public void StoreHustleData(DriverUpdate update)
         {
-            if (update is null ||
-                update.HeightenedTimeAwareness is null ||
-                update.HeightenedTimeAwareness.DispatchAt is null ||
-                update.HeightenedTimeAwareness.LeftStoreAt is null ||
-                update.HeightenedTimeAwareness.StoreEnterAt is null ||
-                update.HeightenedTimeAwareness.InAt is null)
+            if (update is null || update.HeightenedTimeAwareness is null)
                 return;
 
             var hta = update.HeightenedTimeAwareness;
-            var data = new HustleData
-            {
-                HustleOut = (float)(hta.LeftStoreAt - hta.DispatchAt).Value.TotalSeconds,
-                HustleIn = (float)(hta.InAt - hta.StoreEnterAt).Value.TotalSeconds
-            };
 
-            if (DriverHustle.TryGetValue(update.DriverId, out DriverHustleData? value))
+            // When a driver is signed into pulse we get an `In` state with a valid HTA, but all the properties are null
+            // Hopefully this is a good enough filter to let through valid untracked deliveries
+            if (hta.DispatchAt is null &&
+                hta.LeftStoreAt is null &&
+                hta.StoreEnterAt is null &&
+                hta.InAt is null)
+                return;
+
+            bool trackDel = true;
+            HustleData data = default;
+
+            // One of the HTAs didnt track so mark the entire delivery as untracked
+            if (update.HeightenedTimeAwareness.DispatchAt is null ||
+                update.HeightenedTimeAwareness.LeftStoreAt is null ||
+                update.HeightenedTimeAwareness.StoreEnterAt is null ||
+                update.HeightenedTimeAwareness.InAt is null)
             {
-                value.HustleData.Add(data);
+                trackDel = false;
             }
-            else
+
+            if (trackDel)
             {
-                DriverHustle.Add(update.DriverId, new DriverHustleData
+                data = new HustleData
                 {
-                    FirstName = update.FirstName,
-                    LastName = update.LastName,
-                    HustleData = [ data ]
-                });
+                    HustleOut = (float)(hta.LeftStoreAt - hta.DispatchAt).Value.TotalSeconds,
+                    HustleIn = (float)(hta.InAt - hta.StoreEnterAt).Value.TotalSeconds
+                };
+
+                // The leaderboard is basic and doesnt care about tracked percentage
+                // so only store tracked deliveries.
+                if (DriverHustle.TryGetValue(update.DriverId, out DriverHustleData? value))
+                {
+                    value.HustleData.Add(data);
+                }
+                else
+                {
+                    DriverHustle.Add(update.DriverId, new DriverHustleData
+                    {
+                        FirstName = update.FirstName,
+                        LastName = update.LastName,
+                        HustleData = [data]
+                    });
+                }
             }
 
             var scope = _serviceProvider.CreateScope();
@@ -82,7 +103,8 @@ namespace DominosDriverHustleComp.Server.Services
             {
                 Driver = driver,
                 AvgHustleOut = data.HustleOut,
-                AvgHustleIn = data.HustleIn
+                AvgHustleIn = data.HustleIn,
+                WasTracked = trackDel
             });
 
             context.SaveChanges();

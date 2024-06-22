@@ -3,6 +3,7 @@ using System;
 using DominosDriverHustleComp.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DominosDriverHustleComp.Server.Migrations
 {
     [DbContext(typeof(HustleCompContext))]
-    partial class HustleCompContextModelSnapshot : ModelSnapshot
+    [Migration("20240622052234_Added-Delivery-WasTracked")]
+    partial class AddedDeliveryWasTracked
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
@@ -108,9 +111,6 @@ namespace DominosDriverHustleComp.Server.Migrations
 
                     b.Property<int>("MinDels")
                         .HasColumnType("INTEGER");
-
-                    b.Property<float>("MinTrackedPercentage")
-                        .HasColumnType("REAL");
 
                     b.Property<float>("OutlierSeconds")
                         .HasColumnType("REAL");

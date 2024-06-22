@@ -60,8 +60,13 @@
                         }
                     }
 
+                    bool bDisqualified = false;
+                    bDisqualified |= record.NumDels < Settings.MinDels;
+                    bDisqualified |= record.TrackedPercentage < Settings.MinTrackedPercentage;
+                    bDisqualified &= !record.IsAverageRecord;
+
                     // Disqualified
-                    if (record.NumDels < Settings.MinDels && !record.IsAverageRecord)
+                    if (bDisqualified)
                     {
                         trClass += " text-decoration-line-through";
                     }

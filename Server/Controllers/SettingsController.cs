@@ -23,7 +23,8 @@ namespace DominosDriverHustleComp.Server.Controllers
             {
                 HustleBenchmarkSeconds = settings.HustleBenchmarkSeconds,
                 OutlierSeconds = settings.OutlierSeconds,
-                MinDels = settings.MinDels
+                MinDels = settings.MinDels,
+                MinTrackedPercentage = settings.MinTrackedPercentage
             };
         }
     }

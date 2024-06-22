@@ -16,6 +16,7 @@ namespace DominosDriverHustleComp.Client.Services
         public float HustleBenchmarkSeconds { get; private set; }
         public float OutlierSeconds { get; private set; }
         public int MinDels { get; private set; }
+        public float MinTrackedPercentage { get; private set; }
 
         public async Task FetchSettings()
         {
@@ -27,6 +28,7 @@ namespace DominosDriverHustleComp.Client.Services
             HustleBenchmarkSeconds = settings.HustleBenchmarkSeconds;
             OutlierSeconds = settings.OutlierSeconds;
             MinDels = settings.MinDels;
+            MinTrackedPercentage = settings.MinTrackedPercentage;
         }
     }
 }
