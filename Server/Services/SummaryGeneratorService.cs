@@ -53,7 +53,7 @@ namespace DominosDriverHustleComp.Server.Services
                     AvgHustleOut = avgOut,
                     AvgHustleIn = avgIn,
                     AvgHustleCombined = combined,
-                    NumDels = grouped.Count()
+                    NumDels = group.Deliveries.Count()
                 });
             }
 
