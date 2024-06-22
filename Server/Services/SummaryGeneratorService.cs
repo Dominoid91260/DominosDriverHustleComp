@@ -48,8 +48,8 @@ namespace DominosDriverHustleComp.Server.Services
                 if (!trackedDels.Any())
                     continue;
 
-                var avgOut = trackedDels.Average(d => d.AvgHustleOut);
-                var avgIn = trackedDels.Average(d => d.AvgHustleIn);
+                var avgOut = trackedDels.Average(d => d.HustleOut);
+                var avgIn = trackedDels.Average(d => d.HustleIn);
                 var combined = avgOut + avgIn;
                 var numDels = group.Deliveries.Count();
 
@@ -95,8 +95,8 @@ namespace DominosDriverHustleComp.Server.Services
                 return;
             }
 
-            var avgOut = deliveries.Average(d => d.AvgHustleOut);
-            var avgIn = deliveries.Average(d => d.AvgHustleIn);
+            var avgOut = deliveries.Average(d => d.HustleOut);
+            var avgIn = deliveries.Average(d => d.HustleIn);
             var avgCombined = avgOut + avgIn;
 
             context.WeeklySummaries.Add(new WeeklySummary

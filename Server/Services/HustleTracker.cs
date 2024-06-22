@@ -102,8 +102,8 @@ namespace DominosDriverHustleComp.Server.Services
             context.Deliveries.Add(new Delivery
             {
                 Driver = driver,
-                AvgHustleOut = data.HustleOut,
-                AvgHustleIn = data.HustleIn,
+                HustleOut = data.HustleOut,
+                HustleIn = data.HustleIn,
                 WasTracked = trackDel
             });
 
