@@ -51,6 +51,17 @@ namespace DominosDriverHustleComp.Server.Services
                 }
             });
 
+            // Set window height to table height
+            var tblElement = driver.FindElement(By.TagName("table"));
+            var tblHeight = (long)driver.ExecuteScript("return arguments[0].offsetHeight;", tblElement);
+            var currentWindowSize = driver.Manage().Window.Size;
+
+            // if we dont divide by 2, only the `tbody` is stretched to take up the full height of the fullscreen
+            // meaning each of the driver rows is really thicc.
+            // not entirely sure where the math for this comes from but dividing by 2 fixes it
+            driver.Manage().Window.Size = new System.Drawing.Size(currentWindowSize.Width, (int)tblHeight / 2);
+            _logger.LogInformation("Setting window height to {height}", tblHeight);
+
             // We can not automatically request fullscreen because of security reasons.
             // Instead, create a link that will enter fullscreen and click it.
             driver.ExecuteScript("""
