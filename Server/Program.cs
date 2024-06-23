@@ -7,7 +7,7 @@ namespace DominosDriverHustleComp.Server
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -59,8 +59,12 @@ namespace DominosDriverHustleComp.Server
                 var overspeedService = scope.ServiceProvider.GetRequiredService<OverspeedsService>();
                 overspeedService.FetchOverspeeds();
 
-                var screenshot = scope.ServiceProvider.GetRequiredService<ScreenshotService>();
-                screenshot.ScreenshotReport(DateTime.Now.AddDays(-1), CancellationToken.None);
+                var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStarted.Register(async () =>
+                {
+                    var newScope = app.Services.CreateScope();
+                    var screenshot = newScope.ServiceProvider.GetRequiredService<ScreenshotService>();
+                    await screenshot.ScreenshotReport(DateTime.Now.AddDays(-1), CancellationToken.None);
+                });
             }
 
             // Configure the HTTP request pipeline.

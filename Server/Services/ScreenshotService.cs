@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -12,13 +9,11 @@ namespace DominosDriverHustleComp.Server.Services
 {
     public class ScreenshotService
     {
-        private readonly IServer _server;
         private readonly ISendGridClient _emailClient;
         private readonly ILogger<ScreenshotService> _logger;
 
-        public ScreenshotService(IServer server, ISendGridClient emailClient, ILogger<ScreenshotService> logger)
+        public ScreenshotService(ISendGridClient emailClient, ILogger<ScreenshotService> logger)
         {
-            _server = server;
             _emailClient = emailClient;
             _logger = logger;
         }
@@ -34,9 +29,7 @@ namespace DominosDriverHustleComp.Server.Services
             var service = ChromeDriverService.CreateDefaultService("./chromedriver");
             var driver = new ChromeDriver(service, options);
 
-            _logger.LogInformation("Waiting for host address...");
-            var address = await GetHostAddress(cancellationToken);
-            driver.Navigate().GoToUrl(address + "/report/" + weekEnding.ToString("s"));
+            driver.Navigate().GoToUrl("http://localhost:8080/report/" + weekEnding.ToString("s"));
 
             _logger.LogInformation("Waiting for element...");
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
@@ -118,18 +111,6 @@ namespace DominosDriverHustleComp.Server.Services
                 var message = await response.Body.ReadAsStringAsync(cancellationToken);
                 _logger.LogError("Failed to send email ({code}): {message}", response.StatusCode, message);
             }
-        }
-
-        private async Task<string> GetHostAddress(CancellationToken cancellationToken)
-        {
-            var addresses = _server.Features.GetRequiredFeature<IServerAddressesFeature>().Addresses;
-
-            while (!cancellationToken.IsCancellationRequested && addresses.Count == 0)
-                await Task.Yield();
-
-            var address = addresses.FirstOrDefault(string.Empty);
-            var fixedAddress = address.Replace("*", "localhost");
-            return fixedAddress;
         }
     }
 }
