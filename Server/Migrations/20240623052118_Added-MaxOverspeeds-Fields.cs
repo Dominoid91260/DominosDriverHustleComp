@@ -15,7 +15,7 @@ namespace DominosDriverHustleComp.Server.Migrations
                 table: "Settings",
                 type: "INTEGER",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 5);
 
             migrationBuilder.AddColumn<int>(
                 name: "NumOverspeeds",
