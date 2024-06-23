@@ -15,9 +15,9 @@ namespace DominosDriverHustleComp.Server.Controllers
         }
 
         [HttpPost]
-        public async Task Post(DateTime WeekEnding)
+        public async Task Post([FromBody] DateTime weekEnding)
         {
-            await _screenshotService.ScreenshotReport(WeekEnding, CancellationToken.None);
+            await _screenshotService.ScreenshotReport(weekEnding, CancellationToken.None);
         }
     }
 }

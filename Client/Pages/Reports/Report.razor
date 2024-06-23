@@ -8,6 +8,7 @@
 <PageTitle>Report Week Ending @WeekEnding.ToString("d")</PageTitle>
 
 <div class="container">
+    <button class="btn btn-primary mb-3" @onclick="EmailImageToStore">Email image to store</button>
     <table class="table table-sm">
         <thead>
             <tr>
@@ -92,5 +93,10 @@
             AvgIn = avgIn,
             IsAverageRecord = true
         });
+    }
+
+    private async Task EmailImageToStore()
+    {
+        await Http.PostAsJsonAsync("/api/Screenshot", WeekEnding);
     }
 }
