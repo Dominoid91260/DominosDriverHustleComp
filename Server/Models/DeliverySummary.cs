@@ -18,5 +18,6 @@ namespace DominosDriverHustleComp.Server.Models
         public float AvgHustleCombined { get; set; }
         public int NumDels { get; set; }
         public float TrackedPercentage { get; set; }
+        public int NumOverspeeds { get; set; }
     }
 }

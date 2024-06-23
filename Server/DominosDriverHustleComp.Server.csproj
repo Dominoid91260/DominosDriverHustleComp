@@ -28,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Drivosity.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="GPSDashboard.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -17,6 +17,7 @@ namespace DominosDriverHustleComp.Client.Services
         public float OutlierSeconds { get; private set; }
         public int MinDels { get; private set; }
         public float MinTrackedPercentage { get; private set; }
+        public int MaxOverspeeds { get; private set; }
 
         public async Task FetchSettings()
         {
@@ -29,6 +30,7 @@ namespace DominosDriverHustleComp.Client.Services
             OutlierSeconds = settings.OutlierSeconds;
             MinDels = settings.MinDels;
             MinTrackedPercentage = settings.MinTrackedPercentage;
+            MaxOverspeeds = settings.MaxOverspeeds;
         }
     }
 }

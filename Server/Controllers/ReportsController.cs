@@ -22,6 +22,11 @@ namespace DominosDriverHustleComp.Server.Controllers
             }
         }
 
+        public class OverspeedModel
+        {
+            public required Dictionary<int, int> DriverOverspeeds { get; set; }
+        }
+
         private readonly HustleCompContext _context;
 
         public ReportsController(HustleCompContext context)
@@ -61,7 +66,8 @@ namespace DominosDriverHustleComp.Server.Controllers
                     PreviousWeekStats = GetPreviousStatsForDriver(ds.Driver, ds.WeekEnding),
                     WinStreak = streaks.WinStreak,
                     Outlier = streaks.OutlierStreak,
-                    IsDriverDisqualified = ds.Driver.IsPermanentlyDisqualified
+                    IsDriverDisqualified = ds.Driver.IsPermanentlyDisqualified,
+                    NumOverspeeds = ds.NumOverspeeds
                 };
             });
         }
@@ -139,6 +145,33 @@ namespace DominosDriverHustleComp.Server.Controllers
                 WinStreak = wins,
                 OutlierStreak = outliers,
             };
+        }
+
+        [HttpPost("Overspeeds/{weekEnding}")]
+        public async Task<IActionResult> PostOverspeeds(DateTime weekEnding, [FromBody] OverspeedModel overspeeds)
+        {
+            var weeklySummary = _context.WeeklySummaries.Find(weekEnding);
+
+            if (weeklySummary is null)
+                return NotFound();
+
+            _context.Entry(weeklySummary)
+                .Collection(ws => ws.DeliverySummaries)
+                .Query()
+                .Include(ds => ds.Driver)
+                .Load();
+
+            foreach (var delSummary in weeklySummary.DeliverySummaries)
+            {
+                if (overspeeds.DriverOverspeeds.TryGetValue(delSummary.Driver.Id, out var numOverspeeds))
+                {
+                    delSummary.NumOverspeeds = numOverspeeds;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

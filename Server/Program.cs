@@ -7,7 +7,7 @@ namespace DominosDriverHustleComp.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +23,7 @@ namespace DominosDriverHustleComp.Server
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("https://gps-dashboard.dominos.com.au")
+                    builder.WithOrigins("https://gps-dashboard.dominos.com.au", "https://dip.drivosity.com")
                     .AllowAnyHeader()
                     .WithMethods("POST")
                     .AllowCredentials();
@@ -37,6 +37,7 @@ namespace DominosDriverHustleComp.Server
             builder.Services.AddDbContext<HustleCompContext>();
             builder.Services.AddSingleton<SummaryGeneratorService>();
             builder.Services.AddSingleton<ScreenshotService>();
+            builder.Services.AddSingleton<OverspeedsService>();
             builder.Services.AddSendGrid(options => options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY"));
 
             var app = builder.Build();
@@ -54,6 +55,9 @@ namespace DominosDriverHustleComp.Server
                 using var scope = app.Services.CreateScope();
                 var generator = scope.ServiceProvider.GetRequiredService<SummaryGeneratorService>();
                 generator.GenerateSummaries();
+
+                var overspeedService = scope.ServiceProvider.GetRequiredService<OverspeedsService>();
+                overspeedService.FetchOverspeeds();
 
                 var screenshot = scope.ServiceProvider.GetRequiredService<ScreenshotService>();
                 screenshot.ScreenshotReport(DateTime.Now.AddDays(-1), CancellationToken.None);
