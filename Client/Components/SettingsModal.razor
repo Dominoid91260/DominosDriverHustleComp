@@ -13,19 +13,19 @@
             <div class="modal-body">
                 <!-- Hustle Benchmark Seconds -->
                 <div class="form-floating mb-1">
-                    <InputNumber class="form-control" @bind-Value="Settings.HustleBenchmarkSeconds" @bind-Value:after="OnHustleBenchmarkSecondsChanged" />
+                    <InputNumber class="form-control" min="0" @bind-Value="Settings.HustleBenchmarkSeconds" @bind-Value:after="OnHustleBenchmarkSecondsChanged" />
                     <label class="form-label">Husle Benchmark Seconds (One way - in or out)</label>
                 </div>
 
                 <!-- Outlier Seconds -->
                 <div class="form-floating mb-1">
-                    <InputNumber class="form-control" @bind-Value="Settings.OutlierSeconds" @bind-Value:after="OnOutlierSecondsChanged" />
+                    <InputNumber class="form-control" min="0" @bind-Value="Settings.OutlierSeconds" @bind-Value:after="OnOutlierSecondsChanged" />
                     <label class="form-label">Outlier Seconds (Seconds above weekly average)</label>
                 </div>
 
                 <!-- MinDels -->
                 <div class="form-floating mb-1">
-                    <InputNumber class="form-control" @bind-Value="Settings.MinDels" @bind-Value:after="OnMinDelsChanged" />
+                    <InputNumber class="form-control" min="0" @bind-Value="Settings.MinDels" @bind-Value:after="OnMinDelsChanged" />
                     <label class="form-label">Minimum Weekly Deliveries to qualify</label>
                 </div>
 
@@ -37,7 +37,7 @@
 
                 <!-- MaxOverspeeds -->
                 <div class="form-floating mb-1">
-                    <InputNumber class="form-control" @bind-Value="Settings.MaxOverspeeds" @bind-Value:after="OnMaxOverspeedsChanged" />
+                    <InputNumber class="form-control" min="0" @bind-Value="Settings.MaxOverspeeds" @bind-Value:after="OnMaxOverspeedsChanged" />
                     <label class="form-label">Maximum Overspeeds before disqualification</label>
                 </div>
             </div>
