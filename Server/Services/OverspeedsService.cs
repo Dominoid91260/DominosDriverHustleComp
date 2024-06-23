@@ -4,13 +4,6 @@ namespace DominosDriverHustleComp.Server.Services
 {
     public class OverspeedsService
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public OverspeedsService(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         public void FetchOverspeeds()
         {
             var options = new ChromeOptions();
