@@ -1,4 +1,5 @@
 ﻿@page "/report/{weekEnding:datetime}"
+@using DominosDriverHustleComp.Client.Components
 @using DominosDriverHustleComp.Client.Services
 @using DominosDriverHustleComp.Shared.ViewModels
 @inject HttpClient Http
@@ -33,71 +34,7 @@
             {
                 foreach (var record in _records.OrderBy(r => r.AvgOut + r.AvgIn))
                 {
-                    var combined = record.AvgOut + record.AvgIn;
-
-                    var trClass = string.Empty;
-                    var outClass = string.Empty;
-                    var inClass = string.Empty;
-
-                    if (record.IsAverageRecord)
-                    {
-                        trClass = "table-warning";
-                    }
-                    else
-                    {
-                        // the benchmark is for a single time (in or out).
-                        // combined is both, so double it.
-                        var isWinner = combined < Settings.HustleBenchmarkSeconds * 2;
-
-                        if (isWinner)
-                        {
-                            trClass = "table-primary";
-                        }
-                        else
-                        {
-                            outClass = GetCellClassForInOutTime(record.AvgOut);
-                            inClass = GetCellClassForInOutTime(record.AvgIn);
-                        }
-                    }
-
-                    bool bDisqualified = false;
-                    bDisqualified |= record.NumDels < Settings.MinDels;
-                    bDisqualified |= record.TrackedPercentage < Settings.MinTrackedPercentage;
-                    bDisqualified |= record.NumOverspeeds >= Settings.MaxOverspeeds;
-                    bDisqualified |= record.IsDriverDisqualified;
-                    bDisqualified &= !record.IsAverageRecord;
-
-                    // Disqualified
-                    if (bDisqualified)
-                    {
-                        trClass += " text-decoration-line-through";
-                    }
-
-                    var timeStrings = GetRecordStrings(record);
-
-                    var winStreakStr = string.Empty;
-                    var outlierStreakStr = string.Empty;
-
-                    ///@TODO replace these with badges
-                    if (record.WinStreak > 1)
-                    {
-                        var range = Enumerable.Range(0, record.WinStreak).Select(_ => "\U0001f3ce\uFE0F"); // racecar
-                        winStreakStr = string.Join(null, range);
-                    }
-
-                    if (record.Outlier > 1)
-                    {
-                        var range = Enumerable.Range(0, record.Outlier).Select(_ => "\U0001F40C"); // snail
-                        outlierStreakStr = string.Join(null, range);
-                    }
-
-                    <tr class="@trClass">
-                        <td>@record.Name @winStreakStr @outlierStreakStr</td>
-                        <td class="text-center @outClass">@timeStrings.ThisWeek.Out@timeStrings.LastWeek.Out</td>
-                        <td class="text-center @inClass">@timeStrings.ThisWeek.In@timeStrings.LastWeek.In</td>
-                        <td class="text-center">@timeStrings.ThisWeek.Combined@timeStrings.LastWeek.Combined</td>
-                        @{ /* <td>@record.NumOverspeeds</td> */ }
-                    </tr>
+                    <DriverRecordRowComponent Record="@record"></DriverRecordRowComponent>
                 }
             }
         </tbody>
@@ -109,26 +46,6 @@
     public DateTime WeekEnding { get; set; }
 
     private List<ReportRecord>? _records = null;
-
-    private struct TimeStrings
-    {
-        public string Out { get; set; }
-        public string In { get; set; }
-        public string Combined { get; set; }
-
-        public TimeStrings()
-        {
-            Out = string.Empty;
-            In = string.Empty;
-            Combined = string.Empty;
-        }
-    }
-
-    private class RecordStrings
-    {
-        public TimeStrings ThisWeek;
-        public TimeStrings LastWeek;
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -156,55 +73,5 @@
             AvgIn = avgIn,
             IsAverageRecord = true
         });
-    }
-
-    private string GetCellClassForInOutTime(float seconds)
-    {
-        if (seconds > Settings.HustleBenchmarkSeconds)
-            return "table-danger";
-
-        return "table-success";
-    }
-
-    private RecordStrings GetRecordStrings(ReportRecord record)
-    {
-        var combined = record.AvgOut + record.AvgIn;
-        var strings = new RecordStrings
-        {
-            ThisWeek = new TimeStrings
-            {
-                Out = TimeSpan.FromSeconds(record.AvgOut).ToString(@"mm\:ss"),
-                In = TimeSpan.FromSeconds(record.AvgIn).ToString(@"mm\:ss"),
-                Combined = TimeSpan.FromSeconds(combined).ToString(@"mm\:ss")
-            }
-        };
-
-        if (record.PreviousWeekStats is null)
-            return strings;
-
-        // Preformat time strings from last week so we can use them directly in the table output
-        // This will show the time difference for each time (in/out/combined).
-
-        var diffOut = record.AvgOut - record.PreviousWeekStats.AvgOut;
-        var diffIn = record.AvgIn - record.PreviousWeekStats.AvgIn;
-        var lastComb = record.PreviousWeekStats.AvgOut + record.PreviousWeekStats.AvgIn;
-        var diffComb = combined - lastComb;
-
-        var diffOutStr = TimeSpan.FromSeconds(Math.Abs(diffOut)).ToString(@"mm\:ss");
-        var diffInStr = TimeSpan.FromSeconds(Math.Abs(diffIn)).ToString(@"mm\:ss");
-        var diffCombStr = TimeSpan.FromSeconds(Math.Abs(diffComb)).ToString(@"mm\:ss");
-
-        var outSign = diffOut < 0 ? '-' : '+';
-        var inSign = diffIn < 0 ? '-' : '+';
-        var combSign = diffComb < 0 ? '-' : '+';
-
-        strings.LastWeek = new TimeStrings
-        {
-            Out = $" ({outSign}{diffOutStr})",
-            In = $" ({inSign}{diffInStr})",
-            Combined = $" ({combSign}{diffCombStr})"
-        };
-
-        return strings;
     }
 }

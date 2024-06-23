@@ -1,0 +1,166 @@
+﻿@using DominosDriverHustleComp.Client.Services
+@using DominosDriverHustleComp.Shared.ViewModels
+@inject SettingsService Settings
+
+<tr class="@RowClass">
+    <td>@Record.Name @WinStreakString @OutlierStreakString</td>
+    <td class="text-center @OutClass">@RecordTimeStrings.ThisWeek.Out@RecordTimeStrings.LastWeek.Out</td>
+    <td class="text-center @InClass">@RecordTimeStrings.ThisWeek.In@RecordTimeStrings.LastWeek.In</td>
+    <td class="text-center">@RecordTimeStrings.ThisWeek.Combined@RecordTimeStrings.LastWeek.Combined</td>
+    @{ /* <td>@record.NumOverspeeds</td> */ }
+</tr>
+
+@code {
+    private struct TimeStrings
+    {
+        public string Out { get; set; }
+        public string In { get; set; }
+        public string Combined { get; set; }
+
+        public TimeStrings()
+        {
+            Out = string.Empty;
+            In = string.Empty;
+            Combined = string.Empty;
+        }
+    }
+
+    private class RecordStrings
+    {
+        public TimeStrings ThisWeek;
+        public TimeStrings LastWeek;
+    }
+
+    [Parameter]
+    public required ReportRecord Record { get; set; }
+
+    private float CombinedSeconds { get; set; }
+
+    private string RowClass = string.Empty;
+    private string OutClass = string.Empty;
+    private string InClass = string.Empty;
+
+    private const string WinStreakIcon = "\U0001f3ce\uFE0F"; // Racecar
+    private const string OutlierStreakIcon = "\U0001F40C"; // Snail;
+    private string WinStreakString = string.Empty;
+    private string OutlierStreakString = string.Empty;
+
+    private bool Disqualified = false;
+
+    private RecordStrings RecordTimeStrings = new();
+
+    protected override void OnParametersSet()
+    {
+        CombinedSeconds = Record.AvgOut + Record.AvgIn;
+
+        // Disqualify before generating class strings as DQ is used in the generation of class strings.
+        CalculateDisqualification();
+        GenerateClassStrings();
+
+        ///@TODO replace these with badges
+        GenerateStreak(ref WinStreakString, Record.WinStreak, WinStreakIcon);
+        GenerateStreak(ref OutlierStreakString, Record.Outlier, OutlierStreakIcon);
+
+        RecordTimeStrings = GetRecordStrings();
+    }
+
+    private void GenerateClassStrings()
+    {
+        if (Record.IsAverageRecord)
+        {
+            RowClass = "table-warning";
+        }
+        else
+        {
+            // the benchmark is for a single time (in or out).
+            // combined is both, so double it.
+            var isWinner = CombinedSeconds < Settings.HustleBenchmarkSeconds * 2;
+
+            if (isWinner)
+            {
+                RowClass = "table-primary";
+            }
+            else
+            {
+                OutClass = GetCellClassForInOutTime(Record.AvgOut);
+                InClass = GetCellClassForInOutTime(Record.AvgIn);
+            }
+        }
+
+        if (Disqualified)
+        {
+            RowClass += " text-decoration-line-through";
+        }
+    }
+
+    public void CalculateDisqualification()
+    {
+        Disqualified |= Record.NumDels < Settings.MinDels;
+        Disqualified |= Record.TrackedPercentage < Settings.MinTrackedPercentage;
+        Disqualified |= Record.NumOverspeeds >= Settings.MaxOverspeeds;
+        Disqualified |= Record.IsDriverDisqualified;
+        Disqualified &= !Record.IsAverageRecord;
+    }
+
+    private void GenerateStreak(ref string StreakStr, int StreakValue, string Icon)
+    {
+        if (StreakValue <= 1)
+        {
+            StreakStr = string.Empty;
+            return;
+        }
+
+        var range = Enumerable.Range(0, StreakValue).Select(_ => Icon);
+        StreakStr = string.Join(null, range);
+    }
+
+    private string GetCellClassForInOutTime(float seconds)
+    {
+        if (seconds > Settings.HustleBenchmarkSeconds)
+            return "table-danger";
+
+        return "table-success";
+    }
+
+    private RecordStrings GetRecordStrings()
+    {
+        var combined = Record.AvgOut + Record.AvgIn;
+        var strings = new RecordStrings
+            {
+                ThisWeek = new TimeStrings
+                {
+                    Out = TimeSpan.FromSeconds(Record.AvgOut).ToString(@"mm\:ss"),
+                    In = TimeSpan.FromSeconds(Record.AvgIn).ToString(@"mm\:ss"),
+                    Combined = TimeSpan.FromSeconds(combined).ToString(@"mm\:ss")
+                }
+            };
+
+        if (Record.PreviousWeekStats is null)
+            return strings;
+
+        // Preformat time strings from last week so we can use them directly in the table output
+        // This will show the time difference for each time (in/out/combined).
+
+        var diffOut = Record.AvgOut - Record.PreviousWeekStats.AvgOut;
+        var diffIn = Record.AvgIn - Record.PreviousWeekStats.AvgIn;
+        var lastComb = Record.PreviousWeekStats.AvgOut + Record.PreviousWeekStats.AvgIn;
+        var diffComb = combined - lastComb;
+
+        var diffOutStr = TimeSpan.FromSeconds(Math.Abs(diffOut)).ToString(@"mm\:ss");
+        var diffInStr = TimeSpan.FromSeconds(Math.Abs(diffIn)).ToString(@"mm\:ss");
+        var diffCombStr = TimeSpan.FromSeconds(Math.Abs(diffComb)).ToString(@"mm\:ss");
+
+        var outSign = diffOut < 0 ? '-' : '+';
+        var inSign = diffIn < 0 ? '-' : '+';
+        var combSign = diffComb < 0 ? '-' : '+';
+
+        strings.LastWeek = new TimeStrings
+            {
+                Out = $" ({outSign}{diffOutStr})",
+                In = $" ({inSign}{diffInStr})",
+                Combined = $" ({combSign}{diffCombStr})"
+            };
+
+        return strings;
+    }
+}
