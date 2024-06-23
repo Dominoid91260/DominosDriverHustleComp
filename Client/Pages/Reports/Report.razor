@@ -64,8 +64,8 @@
                     bDisqualified |= record.NumDels < Settings.MinDels;
                     bDisqualified |= record.TrackedPercentage < Settings.MinTrackedPercentage;
                     bDisqualified |= record.NumOverspeeds >= Settings.MaxOverspeeds;
+                    bDisqualified |= record.IsDriverDisqualified;
                     bDisqualified &= !record.IsAverageRecord;
-                    bDisqualified &= record.IsDriverDisqualified;
 
                     // Disqualified
                     if (bDisqualified)
