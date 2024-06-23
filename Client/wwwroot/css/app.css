@@ -107,3 +107,8 @@ code {
     font-variant-numeric: tabular-nums;
     overflow: scroll;
 }
+
+.size125
+{
+    transform: scale(1.25);
+}

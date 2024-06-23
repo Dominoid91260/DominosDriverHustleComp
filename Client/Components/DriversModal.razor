@@ -1,0 +1,49 @@
+﻿@using DominosDriverHustleComp.Client.Services
+@using DominosDriverHustleComp.Shared.ViewModels
+@inject HttpClient Http
+
+<div class="modal" id="driversModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Drivers</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                @if (_driverDisqualifications is null)
+                {
+                    <div class="alert alert-secondary">
+                        <p class="mb-0 text-center">Loading...</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col fw-bold">Name</div>
+                        <div class="col fw-bold">Disqualified</div>
+                    </div>
+
+                    foreach (var data in _driverDisqualifications.OrderBy(dd => dd.Name))
+                    {
+                        <DriverDisqualificationRowComponent @key="data.DriverId" Driver="data" />
+                    }
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IEnumerable<DriverDisqualification>? _driverDisqualifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _driverDisqualifications = await Http.GetFromJsonAsync<IEnumerable<DriverDisqualification>>("/api/Drivers/Disqualifications");
+    }
+}

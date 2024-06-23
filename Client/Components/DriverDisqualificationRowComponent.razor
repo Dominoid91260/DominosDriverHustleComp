@@ -1,0 +1,21 @@
+﻿@using DominosDriverHustleComp.Shared.ViewModels
+@inject HttpClient Http
+
+<div class="row">
+    <div class="col">@Driver.Name</div>
+    <div class="col">
+        <div class="form-check form-switch">
+            <input class="form-check-input size2" type="checkbox" id="flexSwitchCheckDefault" @bind="Driver.IsDisqualified" @bind:after="OnIsDisqualifiedChanged">
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public DriverDisqualification Driver { get; set; }
+
+    private async Task OnIsDisqualifiedChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Drivers/Disqualifications/" + Driver.DriverId, Driver.IsDisqualified);
+    }
+}
