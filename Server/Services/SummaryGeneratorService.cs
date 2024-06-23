@@ -61,7 +61,7 @@ namespace DominosDriverHustleComp.Server.Services
                     AvgHustleIn = avgIn,
                     AvgHustleCombined = combined,
                     NumDels = numDels,
-                    TrackedPercentage = group.Deliveries.Count(d => d.WasTracked) / numDels
+                    TrackedPercentage = group.Deliveries.Count(d => d.WasTracked) * 100 / numDels
                 });
             }
 

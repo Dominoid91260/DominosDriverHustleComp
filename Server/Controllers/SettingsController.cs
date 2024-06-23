@@ -51,8 +51,11 @@ namespace DominosDriverHustleComp.Server.Controllers
         }
 
         [HttpPost("MinTrackedPercentage")]
-        public async Task PostMinTrackedPercentage([FromBody] float minTrackedPercentage)
+        public async Task PostMinTrackedPercentage([FromBody] int minTrackedPercentage)
         {
+            if (minTrackedPercentage < 0 || minTrackedPercentage > 100)
+                return; ///@TODO maybe return 404?
+
             _context.Settings.First().MinTrackedPercentage = minTrackedPercentage;
             await _context.SaveChangesAsync();
         }

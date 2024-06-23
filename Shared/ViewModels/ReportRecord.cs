@@ -7,7 +7,7 @@
         public float AvgIn { get; set;}
         public int NumDels { get; set; }
         public int NumOverspeeds { get; set; } = 0;
-        public float TrackedPercentage { get; set; }
+        public int TrackedPercentage { get; set; }
         public int WinStreak { get; set; } = 0;
         public int Outlier { get; set; } = 0;
         public PreviousWeekStats? PreviousWeekStats { get; set; }

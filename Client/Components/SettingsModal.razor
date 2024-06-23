@@ -31,8 +31,8 @@
 
                 <!-- MinTrackedPercentage -->
                 <div class="form-floating mb-1">
-                    <InputNumber class="form-control" @bind-Value="Settings.MinTrackedPercentage" @bind-Value:after="OnMinTrackedPercentageChanged" />
-                    <label class="form-label">Minimum Tracked Delivery Percentage before disqualification</label>
+                    <InputNumber class="form-control" min="0" max="100" @bind-Value="Settings.MinTrackedPercentage" @bind-Value:after="OnMinTrackedPercentageChanged" />
+                    <label class="form-label">Minimum Tracked Delivery Percentage before disqualification (0-100)</label>
                 </div>
 
                 <!-- MaxOverspeeds -->
