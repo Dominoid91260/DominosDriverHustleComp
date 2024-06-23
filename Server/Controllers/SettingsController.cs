@@ -30,14 +30,14 @@ namespace DominosDriverHustleComp.Server.Controllers
         }
 
         [HttpPost("HustleBenchmarkSeconds")]
-        public async Task PostHustleBenchmarkSeconds([FromBody] float hustleBenchmarkSeconds)
+        public async Task PostHustleBenchmarkSeconds([FromBody] int hustleBenchmarkSeconds)
         {
             _context.Settings.First().HustleBenchmarkSeconds = hustleBenchmarkSeconds;
             await _context.SaveChangesAsync();
         }
 
         [HttpPost("OutlierSeconds")]
-        public async Task PostOutlierSeconds([FromBody] float outlierSeconds)
+        public async Task PostOutlierSeconds([FromBody] int outlierSeconds)
         {
             _context.Settings.First().OutlierSeconds = outlierSeconds;
             await _context.SaveChangesAsync();
