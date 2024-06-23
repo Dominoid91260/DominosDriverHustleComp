@@ -37,7 +37,7 @@ namespace DominosDriverHustleComp.Server.Controllers
         [HttpGet]
         public async Task<IEnumerable<DateTime>> Get()
         {
-            return _context.WeeklySummaries.Select(ws => ws.WeekEnding);
+            return _context.WeeklySummaries.Select(ws => ws.WeekEnding.Date);
         }
 
         [HttpGet("{weekEnding}")]
@@ -47,7 +47,7 @@ namespace DominosDriverHustleComp.Server.Controllers
                 .Include(ws => ws.DeliverySummaries)
                 .ThenInclude(ds => ds.Driver)
                 .ThenInclude(d => d.DeliverySummaries)
-                .FirstOrDefaultAsync(ws => ws.WeekEnding == weekEnding);
+                .FirstOrDefaultAsync(ws => ws.WeekEnding == weekEnding.Date);
 
             if (weeklySummary is null)
                 return [];
@@ -77,7 +77,7 @@ namespace DominosDriverHustleComp.Server.Controllers
             if (!driver.DeliverySummaries.Any())
                 return null;
 
-            var prevSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding < from);
+            var prevSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding < from.Date);
 
             if (!prevSummaries.Any())
                 return null;
@@ -96,14 +96,16 @@ namespace DominosDriverHustleComp.Server.Controllers
             if (!driver.DeliverySummaries.Any())
                 return default;
 
-            var currentDelSummary = driver.DeliverySummaries.First(ds => ds.WeekEnding == from);
-            var currentWeeklySummary = _context.WeeklySummaries.Find(from);
+            var fromDate = from.Date;
+
+            var currentDelSummary = driver.DeliverySummaries.First(ds => ds.WeekEnding == fromDate);
+            var currentWeeklySummary = _context.WeeklySummaries.Find(fromDate);
 
             var settings = _context.Settings.First();
 
             // Include the requested week in the search, this way a 1 week win will be 1 streak.
             // We can handle displaying this on the client by checking if the streak is 1
-            var delSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding <= from);
+            var delSummaries = driver.DeliverySummaries.Where(ds => ds.WeekEnding <= fromDate);
 
             if (!delSummaries.Any())
                 return default;
@@ -150,7 +152,7 @@ namespace DominosDriverHustleComp.Server.Controllers
         [HttpPost("Overspeeds/{weekEnding}")]
         public async Task<IActionResult> PostOverspeeds(DateTime weekEnding, [FromBody] OverspeedModel overspeeds)
         {
-            var weeklySummary = _context.WeeklySummaries.Find(weekEnding);
+            var weeklySummary = _context.WeeklySummaries.Find(weekEnding.Date);
 
             if (weeklySummary is null)
                 return NotFound();
