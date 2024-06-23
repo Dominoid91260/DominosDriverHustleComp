@@ -11,14 +11,23 @@
     <table class="table table-sm">
         <thead>
             <tr>
-                <th colspan="4" class="text-center">Hustle Comp Week Ending @WeekEnding.ToString("d")</th>
+                <th colspan="@_headingColSpan" class="text-center">Hustle Comp Week Ending @WeekEnding.ToString("d")</th>
             </tr>
             <tr>
                 <th>Name</th>
                 <th class="text-center">Hustle Out</th>
                 <th class="text-center">Hustle In</th>
                 <th class="text-center">Hustle Combined</th>
-                @{ /* <th>Overspeeds</th> */ }
+
+                @if (_showTracked)
+                {
+                <th class="text-center">Tracked %</th>
+                }
+
+                @if (_showOverspeed)
+                {
+                <th class="text-center">Overspeeds</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -34,7 +43,7 @@
             {
                 foreach (var record in _records.OrderBy(r => r.AvgOut + r.AvgIn))
                 {
-                    <DriverRecordRowComponent Record="@record"></DriverRecordRowComponent>
+                    <DriverReportRowComponent Record="@record" ShowTracked="@_showTracked" ShowOverspeed="@_showOverspeed"></DriverReportRowComponent>
                 }
             }
         </tbody>
@@ -46,6 +55,9 @@
     public DateTime WeekEnding { get; set; }
 
     private List<ReportRecord>? _records = null;
+    private bool _showTracked = false;
+    private bool _showOverspeed = false;
+    private int _headingColSpan = 4;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,6 +70,13 @@
         }
 
         _records = records.ToList();
+
+        _showTracked = _records.Any(r => r.TrackedPercentage < Settings.MinTrackedPercentage);
+        _showOverspeed = _records.Any(r => r.NumOverspeeds >= Settings.MaxOverspeeds);
+
+        _headingColSpan += _showTracked ? 1 : 0;
+        _headingColSpan += _showOverspeed ? 1 : 0;
+
         InjectAverageRecord();
     }
 

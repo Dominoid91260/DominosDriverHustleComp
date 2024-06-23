@@ -7,7 +7,29 @@
     <td class="text-center @OutClass">@RecordTimeStrings.ThisWeek.Out@RecordTimeStrings.LastWeek.Out</td>
     <td class="text-center @InClass">@RecordTimeStrings.ThisWeek.In@RecordTimeStrings.LastWeek.In</td>
     <td class="text-center">@RecordTimeStrings.ThisWeek.Combined@RecordTimeStrings.LastWeek.Combined</td>
-    @{ /* <td>@record.NumOverspeeds</td> */ }
+    @if (ShowTracked)
+    {
+        if (Record.IsAverageRecord)
+        {
+        <td></td>
+        }
+        else
+        {
+        <td class="text-center">@((Record.TrackedPercentage * 100).ToString("00.00"))%</td>
+        }
+    }
+
+    @if (ShowOverspeed)
+    {
+        if (Record.IsAverageRecord)
+        {
+        <td></td>
+        }
+        else
+        {
+        <td class="text-center">@Record.NumOverspeeds</td>
+        }
+    }
 </tr>
 
 @code {
@@ -33,6 +55,12 @@
 
     [Parameter]
     public required ReportRecord Record { get; set; }
+
+    [Parameter]
+    public bool ShowTracked { get; set; } = false;
+
+    [Parameter]
+    public bool ShowOverspeed { get; set; } = false;
 
     private float CombinedSeconds { get; set; }
 
