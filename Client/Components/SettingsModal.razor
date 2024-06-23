@@ -1,0 +1,77 @@
+﻿@using DominosDriverHustleComp.Client.Services
+@inject HttpClient Http
+@inject SettingsService Settings
+
+<div class="modal" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Settings</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Hustle Benchmark Seconds -->
+                <div class="form-floating mb-1">
+                    <InputNumber class="form-control" @bind-Value="Settings.HustleBenchmarkSeconds" @bind-Value:after="OnHustleBenchmarkSecondsChanged" />
+                    <label class="form-label">Husle Benchmark Seconds (One way - in or out)</label>
+                </div>
+
+                <!-- Outlier Seconds -->
+                <div class="form-floating mb-1">
+                    <InputNumber class="form-control" @bind-Value="Settings.OutlierSeconds" @bind-Value:after="OnOutlierSecondsChanged" />
+                    <label class="form-label">Outlier Seconds (Seconds above weekly average)</label>
+                </div>
+
+                <!-- MinDels -->
+                <div class="form-floating mb-1">
+                    <InputNumber class="form-control" @bind-Value="Settings.MinDels" @bind-Value:after="OnMinDelsChanged" />
+                    <label class="form-label">Minimum Weekly Deliveries to qualify</label>
+                </div>
+
+                <!-- MinTrackedPercentage -->
+                <div class="form-floating mb-1">
+                    <InputNumber class="form-control" @bind-Value="Settings.MinTrackedPercentage" @bind-Value:after="OnMinTrackedPercentageChanged" />
+                    <label class="form-label">Minimum Tracked Delivery Percentage before disqualification</label>
+                </div>
+
+                <!-- MaxOverspeeds -->
+                <div class="form-floating mb-1">
+                    <InputNumber class="form-control" @bind-Value="Settings.MaxOverspeeds" @bind-Value:after="OnMaxOverspeedsChanged" />
+                    <label class="form-label">Maximum Overspeeds before disqualification</label>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task OnHustleBenchmarkSecondsChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/HustleBenchmarkSeconds", Settings.HustleBenchmarkSeconds);
+    }
+
+    private async Task OnOutlierSecondsChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/OutlierSeconds", Settings.OutlierSeconds);
+    }
+
+    private async Task OnMinDelsChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/MinDels", Settings.MinDels);
+    }
+
+    private async Task OnMinTrackedPercentageChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/MinTrackedPercentage", Settings.MinTrackedPercentage);
+    }
+
+    private async Task OnMaxOverspeedsChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/MaxOverspeeds", Settings.MaxOverspeeds);
+    }
+}

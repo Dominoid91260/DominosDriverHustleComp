@@ -28,5 +28,40 @@ namespace DominosDriverHustleComp.Server.Controllers
                 MaxOverspeeds = settings.MaxOverspeeds
             };
         }
+
+        [HttpPost("HustleBenchmarkSeconds")]
+        public async Task PostHustleBenchmarkSeconds([FromBody] float hustleBenchmarkSeconds)
+        {
+            _context.Settings.First().HustleBenchmarkSeconds = hustleBenchmarkSeconds;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("OutlierSeconds")]
+        public async Task PostOutlierSeconds([FromBody] float outlierSeconds)
+        {
+            _context.Settings.First().OutlierSeconds = outlierSeconds;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("MinDels")]
+        public async Task PostMinDels([FromBody] int minDels)
+        {
+            _context.Settings.First().MinDels = minDels;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("MinTrackedPercentage")]
+        public async Task PostMinTrackedPercentage([FromBody] float minTrackedPercentage)
+        {
+            _context.Settings.First().MinTrackedPercentage = minTrackedPercentage;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("MaxOverspeeds")]
+        public async Task PostMaxOverspeeds([FromBody] int maxOverspeeds)
+        {
+            _context.Settings.First().MaxOverspeeds = maxOverspeeds;
+            await _context.SaveChangesAsync();
+        }
     }
 }

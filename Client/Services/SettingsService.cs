@@ -13,11 +13,11 @@ namespace DominosDriverHustleComp.Client.Services
             _serviceProvider = serviceProvider;
         }
 
-        public float HustleBenchmarkSeconds { get; private set; }
-        public float OutlierSeconds { get; private set; }
-        public int MinDels { get; private set; }
-        public float MinTrackedPercentage { get; private set; }
-        public int MaxOverspeeds { get; private set; }
+        public float HustleBenchmarkSeconds { get; set; }
+        public float OutlierSeconds { get; set; }
+        public int MinDels { get; set; }
+        public float MinTrackedPercentage { get; set; }
+        public int MaxOverspeeds { get; set; }
 
         public async Task FetchSettings()
         {
