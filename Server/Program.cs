@@ -58,13 +58,6 @@ namespace DominosDriverHustleComp.Server
 
                 var overspeedService = scope.ServiceProvider.GetRequiredService<OverspeedsService>();
                 overspeedService.FetchOverspeeds();
-
-                var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStarted.Register(async () =>
-                {
-                    var newScope = app.Services.CreateScope();
-                    var screenshot = newScope.ServiceProvider.GetRequiredService<ScreenshotService>();
-                    await screenshot.ScreenshotReport(DateTime.Now.AddDays(-1), CancellationToken.None);
-                });
             }
 
             // Configure the HTTP request pipeline.

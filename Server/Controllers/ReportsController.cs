@@ -1,5 +1,6 @@
 ﻿using DominosDriverHustleComp.Server.Data;
 using DominosDriverHustleComp.Server.Models;
+using DominosDriverHustleComp.Server.Services;
 using DominosDriverHustleComp.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,10 +29,14 @@ namespace DominosDriverHustleComp.Server.Controllers
         }
 
         private readonly HustleCompContext _context;
+        private readonly ScreenshotService _screenshotService;
+        private readonly ILogger<ReportsController> _logger;
 
-        public ReportsController(HustleCompContext context)
+        public ReportsController(HustleCompContext context, ScreenshotService screenshotService, ILogger<ReportsController> logger)
         {
             _context = context;
+            _screenshotService = screenshotService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -172,6 +177,15 @@ namespace DominosDriverHustleComp.Server.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            var now = DateTime.Now;
+            var lastSunday = now.AddDays(-(int)now.DayOfWeek).Date;
+
+            if (weekEnding.Date == lastSunday)
+            {
+                _logger.LogInformation("Received overspeeds for {sunday}, screenshotting report", lastSunday.ToString("d"));
+                await _screenshotService.ScreenshotReport(lastSunday, CancellationToken.None);
+            }
 
             return Ok();
         }
