@@ -110,7 +110,7 @@ async function sendOverspeeds() {
 
     try {
         const dates = getWeekDates();
-        await fetch("http://localhost:8080/api/Reports/Overspeeds/" + dates.to.toISOString(), {
+        await fetch("http://localhost:8080/api/Reports/Overspeeds/" + getDateYYYMMDDString(dates.to), {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
