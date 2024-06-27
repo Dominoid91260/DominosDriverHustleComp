@@ -39,7 +39,7 @@
         <tbody>
             @if (_records is null)
             {
-                <td colspan="4" class="text-center">Loading...</td>
+                <td colspan="@_headingColSpan" class="text-center">Loading...</td>
             }
             else if (_records.Count == 0)
             {
@@ -67,6 +67,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _headingColSpan += Settings.ShowDeliveries ? 1 : 0;
+
         var records = await Http.GetFromJsonAsync<IEnumerable<ReportRecord>>($"/api/Reports/{WeekEnding.ToString("s")}");
 
         if (records is null || !records.Any())
@@ -80,7 +82,6 @@
         _showTracked = _records.Any(r => r.TrackedPercentage < Settings.MinTrackedPercentage);
         _showOverspeed = _records.Any(r => r.NumOverspeeds >= Settings.MaxOverspeeds);
 
-        _headingColSpan += Settings.ShowDeliveries ? 1 : 0;
         _headingColSpan += _showTracked ? 1 : 0;
         _headingColSpan += _showOverspeed ? 1 : 0;
 
