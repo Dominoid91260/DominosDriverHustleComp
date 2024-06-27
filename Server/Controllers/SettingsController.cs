@@ -25,7 +25,8 @@ namespace DominosDriverHustleComp.Server.Controllers
                 OutlierSeconds = settings.OutlierSeconds,
                 MinDels = settings.MinDels,
                 MinTrackedPercentage = settings.MinTrackedPercentage,
-                MaxOverspeeds = settings.MaxOverspeeds
+                MaxOverspeeds = settings.MaxOverspeeds,
+                ShowDeliveries = settings.ShowDeliveries
             };
         }
 
@@ -64,6 +65,13 @@ namespace DominosDriverHustleComp.Server.Controllers
         public async Task PostMaxOverspeeds([FromBody] int maxOverspeeds)
         {
             _context.Settings.First().MaxOverspeeds = maxOverspeeds;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("ShowDeliveries")]
+        public async Task PostShowDeliveries([FromBody] bool showDeliveries)
+        {
+            _context.Settings.First().ShowDeliveries = showDeliveries;
             await _context.SaveChangesAsync();
         }
     }

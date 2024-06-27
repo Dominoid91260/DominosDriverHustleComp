@@ -7,6 +7,19 @@
     <td class="text-center @OutClass">@RecordTimeStrings.ThisWeek.Out@RecordTimeStrings.LastWeek.Out</td>
     <td class="text-center @InClass">@RecordTimeStrings.ThisWeek.In@RecordTimeStrings.LastWeek.In</td>
     <td class="text-center">@RecordTimeStrings.ThisWeek.Combined@RecordTimeStrings.LastWeek.Combined</td>
+
+    @if (Settings.ShowDeliveries)
+    {
+        @if (Record.IsAverageRecord)
+        {
+            <td></td>
+        }
+        else
+        {
+            <td class="text-center">@Record.NumDels</td>
+        }
+    }
+
     @if (ShowTracked)
     {
         if (Record.IsAverageRecord)

@@ -7,5 +7,6 @@
         public int MinDels { get; set; }
         public int MinTrackedPercentage { get; set; }
         public int MaxOverspeeds { get; set; }
+        public bool ShowDeliveries { get; set; }
     }
 }

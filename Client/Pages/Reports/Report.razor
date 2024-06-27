@@ -20,6 +20,11 @@
                 <th class="text-center">Hustle In</th>
                 <th class="text-center">Hustle Combined</th>
 
+                @if (Settings.ShowDeliveries)
+                {
+                <th class="text-center"># Deliveries</th>
+                }
+
                 @if (_showTracked)
                 {
                 <th class="text-center">Tracked %</th>
@@ -58,7 +63,7 @@
     private List<ReportRecord>? _records = null;
     private bool _showTracked = false;
     private bool _showOverspeed = false;
-    private int _headingColSpan = 4;
+    private int _headingColSpan = 4; // Name, Hustle Out, Hustle In, Combined
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,6 +80,7 @@
         _showTracked = _records.Any(r => r.TrackedPercentage < Settings.MinTrackedPercentage);
         _showOverspeed = _records.Any(r => r.NumOverspeeds >= Settings.MaxOverspeeds);
 
+        _headingColSpan += Settings.ShowDeliveries ? 1 : 0;
         _headingColSpan += _showTracked ? 1 : 0;
         _headingColSpan += _showOverspeed ? 1 : 0;
 

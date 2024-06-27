@@ -40,6 +40,14 @@
                     <InputNumber class="form-control" min="0" @bind-Value="Settings.MaxOverspeeds" @bind-Value:after="OnMaxOverspeedsChanged" />
                     <label class="form-label">Maximum Overspeeds before disqualification</label>
                 </div>
+
+                <!-- ShowDeliveries -->
+                <div class="form-floating mb-1">
+                    <div class="form-control form-check form-switch">
+                        <input type="checkbox" class="form-check-input mx-auto" @bind="Settings.ShowDeliveries" @bind:after="OnShowDeliveriesChanged" />
+                    </div>
+                    <label class="form-label">Show Deliveries in reports</label>
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -73,5 +81,10 @@
     private async Task OnMaxOverspeedsChanged()
     {
         await Http.PostAsJsonAsync("/api/Settings/MaxOverspeeds", Settings.MaxOverspeeds);
+    }
+
+    private async Task OnShowDeliveriesChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/ShowDeliveries", Settings.ShowDeliveries);
     }
 }
