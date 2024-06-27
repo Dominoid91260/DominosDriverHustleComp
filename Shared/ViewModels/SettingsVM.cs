@@ -8,5 +8,6 @@
         public int MinTrackedPercentage { get; set; }
         public int MaxOverspeeds { get; set; }
         public bool ShowDeliveries { get; set; }
+        public bool EnableCompetition { get; set; }
     }
 }

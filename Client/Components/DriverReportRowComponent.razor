@@ -110,22 +110,25 @@
         if (Record.IsAverageRecord)
         {
             RowClass = "table-warning";
+            return;
+        }
+
+        // If competition is disabled we dont need strikethrough or benchmark comparisons and there are no "winners"
+        if (!Settings.EnableCompetition)
+            return;
+
+        // the benchmark is for a single time (in or out).
+        // combined is both, so double it.
+        var isWinner = CombinedSeconds < Settings.HustleBenchmarkSeconds * 2;
+
+        if (isWinner)
+        {
+            RowClass = "table-primary";
         }
         else
         {
-            // the benchmark is for a single time (in or out).
-            // combined is both, so double it.
-            var isWinner = CombinedSeconds < Settings.HustleBenchmarkSeconds * 2;
-
-            if (isWinner)
-            {
-                RowClass = "table-primary";
-            }
-            else
-            {
-                OutClass = GetCellClassForInOutTime(Record.AvgOut);
-                InClass = GetCellClassForInOutTime(Record.AvgIn);
-            }
+            OutClass = GetCellClassForInOutTime(Record.AvgOut);
+            InClass = GetCellClassForInOutTime(Record.AvgIn);
         }
 
         if (Disqualified)
@@ -136,6 +139,12 @@
 
     public void CalculateDisqualification()
     {
+        if (!Settings.EnableCompetition)
+        {
+            Disqualified = false;
+            return;
+        }
+
         Disqualified |= Record.NumDels < Settings.MinDels;
         Disqualified |= Record.TrackedPercentage < Settings.MinTrackedPercentage;
         Disqualified |= Record.NumOverspeeds >= Settings.MaxOverspeeds;

@@ -19,6 +19,7 @@ namespace DominosDriverHustleComp.Client.Services
         public int MinTrackedPercentage { get; set; }
         public int MaxOverspeeds { get; set; }
         public bool ShowDeliveries { get; set; }
+        public bool EnableCompetition { get; set; }
 
         public async Task FetchSettings()
         {
@@ -33,6 +34,7 @@ namespace DominosDriverHustleComp.Client.Services
             MinTrackedPercentage = settings.MinTrackedPercentage;
             MaxOverspeeds = settings.MaxOverspeeds;
             ShowDeliveries = settings.ShowDeliveries;
+            EnableCompetition = settings.EnableCompetition;
         }
     }
 }

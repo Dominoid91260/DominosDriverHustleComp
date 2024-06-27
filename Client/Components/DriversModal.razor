@@ -1,6 +1,7 @@
 ﻿@using DominosDriverHustleComp.Client.Services
 @using DominosDriverHustleComp.Shared.ViewModels
 @inject HttpClient Http
+@inject SettingsService Settings
 
 <div class="modal" id="driversModal" tabindex="-1">
     <div class="modal-dialog">
@@ -19,6 +20,13 @@
                 }
                 else
                 {
+                    if (!Settings.EnableCompetition)
+                    {
+                    <div class="alert alert-warning">
+                        <p class="mb-0 text-center">Changes here will not immediately be reflected in reports as competition is disabled</p>
+                    </div>
+                    }
+
                     <div class="row">
                         <div class="col fw-bold">Name</div>
                         <div class="col fw-bold">Disqualified</div>

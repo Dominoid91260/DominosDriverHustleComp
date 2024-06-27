@@ -16,5 +16,6 @@ namespace DominosDriverHustleComp.Server.Models
 
         public int MaxOverspeeds { get; set; }
         public bool ShowDeliveries { get; set; }
+        public bool EnableCompetition { get; set; }
     }
 }

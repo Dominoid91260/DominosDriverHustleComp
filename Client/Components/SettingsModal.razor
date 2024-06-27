@@ -48,6 +48,14 @@
                     </div>
                     <label class="form-label">Show Deliveries in reports</label>
                 </div>
+
+                <!-- EnableCompetition -->
+                <div class="form-floating mb-1">
+                    <div class="form-control form-check form-switch">
+                        <input type="checkbox" class="form-check-input mx-auto" @bind="Settings.EnableCompetition" @bind:after="OnEnableCompetitionChanged" />
+                    </div>
+                    <label class="form-label">Enable Competition (enables/disables disqualification and benchmark times)</label>
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -86,5 +94,10 @@
     private async Task OnShowDeliveriesChanged()
     {
         await Http.PostAsJsonAsync("/api/Settings/ShowDeliveries", Settings.ShowDeliveries);
+    }
+
+    private async Task OnEnableCompetitionChanged()
+    {
+        await Http.PostAsJsonAsync("/api/Settings/EnableCompetition", Settings.EnableCompetition);
     }
 }

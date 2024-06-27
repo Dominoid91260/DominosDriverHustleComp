@@ -26,7 +26,8 @@ namespace DominosDriverHustleComp.Server.Controllers
                 MinDels = settings.MinDels,
                 MinTrackedPercentage = settings.MinTrackedPercentage,
                 MaxOverspeeds = settings.MaxOverspeeds,
-                ShowDeliveries = settings.ShowDeliveries
+                ShowDeliveries = settings.ShowDeliveries,
+                EnableCompetition = settings.EnableCompetition
             };
         }
 
@@ -72,6 +73,13 @@ namespace DominosDriverHustleComp.Server.Controllers
         public async Task PostShowDeliveries([FromBody] bool showDeliveries)
         {
             _context.Settings.First().ShowDeliveries = showDeliveries;
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpPost("EnableCompetition")]
+        public async Task PostEnableCompetition([FromBody] bool enableCompetition)
+        {
+            _context.Settings.First().EnableCompetition = enableCompetition;
             await _context.SaveChangesAsync();
         }
     }
