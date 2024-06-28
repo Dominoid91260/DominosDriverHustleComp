@@ -38,7 +38,9 @@ namespace DominosDriverHustleComp.Server.Services
 
             _logger.LogInformation("Setting up SSE client");
 
-            var conf = Configuration.Builder(new Uri("https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/98037/events"));
+            var storeNumber = Environment.GetEnvironmentVariable("GPS_STORENUMBER");
+
+            var conf = Configuration.Builder(new Uri($"https://gps-prod-das.dominos.com.au/driver-app-service/dashboard/{storeNumber}/events"));
             conf.RequestHeaders(new Dictionary<string, string>(){
                 { "dpz-market", "AUSTRALIA" },
                 { "dpz-language", "en" },
