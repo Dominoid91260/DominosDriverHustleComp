@@ -78,5 +78,11 @@ namespace DominosDriverHustleComp.Server.Services
 
             _driver.Navigate().GoToUrl("https://gps-dashboard.dominos.com.au");
         }
+
+        public void StopBrowser()
+        {
+            _driver?.Quit();
+            _driver = null;
+        }
     }
 }

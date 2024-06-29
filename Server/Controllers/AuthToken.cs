@@ -26,6 +26,9 @@ namespace DominosDriverHustleComp.Server.Controllers
             var scope = _serviceProvider.CreateScope();
             var sseService = scope.ServiceProvider.GetRequiredService<GPSSSEService>();
             sseService.BearerToken = model.BearerToken;
+
+            var gpsService = scope.ServiceProvider.GetRequiredService<GPSDashboardService>();
+            gpsService.StopBrowser();
         }
     }
 }

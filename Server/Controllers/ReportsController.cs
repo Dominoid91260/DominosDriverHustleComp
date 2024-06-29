@@ -31,12 +31,14 @@ namespace DominosDriverHustleComp.Server.Controllers
         private readonly HustleCompContext _context;
         private readonly ScreenshotService _screenshotService;
         private readonly ILogger<ReportsController> _logger;
+        private readonly OverspeedsService _overspeedsService;
 
-        public ReportsController(HustleCompContext context, ScreenshotService screenshotService, ILogger<ReportsController> logger)
+        public ReportsController(HustleCompContext context, ScreenshotService screenshotService, ILogger<ReportsController> logger, OverspeedsService overspeedsService)
         {
             _context = context;
             _screenshotService = screenshotService;
             _logger = logger;
+            _overspeedsService = overspeedsService;
         }
 
         [HttpGet]
@@ -186,6 +188,8 @@ namespace DominosDriverHustleComp.Server.Controllers
                 _logger.LogInformation("Received overspeeds for {sunday}, screenshotting report", lastSunday.ToString("d"));
                 await _screenshotService.ScreenshotReport(lastSunday, CancellationToken.None);
             }
+
+            _overspeedsService.StopBrowser();
 
             return Ok();
         }

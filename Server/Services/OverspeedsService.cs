@@ -4,6 +4,7 @@ namespace DominosDriverHustleComp.Server.Services
 {
     public class OverspeedsService
     {
+        private ChromeDriver? _driver = null;
         public void FetchOverspeeds()
         {
             var options = new ChromeOptions();
@@ -11,7 +12,7 @@ namespace DominosDriverHustleComp.Server.Services
             options.AddArgument("--headless");
 
             var service = ChromeDriverService.CreateDefaultService("./chromedriver");
-            var driver = new ChromeDriver(service, options);
+            _driver = new ChromeDriver(service, options);
 
             var envDrivosityEmail = Environment.GetEnvironmentVariable("DRIVOSITY_EMAIL");
             var envDrivosityPass = Environment.GetEnvironmentVariable("DRIVOSITY_PASS");
@@ -22,13 +23,19 @@ namespace DominosDriverHustleComp.Server.Services
             {
                 { "source", source }
             };
-            driver.ExecuteCdpCommand("Page.addScriptToEvaluateOnNewDocument", cmdparams);
+            _driver.ExecuteCdpCommand("Page.addScriptToEvaluateOnNewDocument", cmdparams);
 
-            driver.Navigate().GoToUrl("https://dip.drivosity.com/live");
+            _driver.Navigate().GoToUrl("https://dip.drivosity.com/live");
 
             ///@TODO quit the driver once overspeeds have been received.
             /// using WebDriverWait.Until is not feasible since its a blocking/busy wait
             /// and will prevent the server from starting.
+        }
+
+        public void StopBrowser()
+        {
+            _driver?.Quit();
+            _driver = null;
         }
     }
 }
