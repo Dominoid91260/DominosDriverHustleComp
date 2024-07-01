@@ -25,6 +25,9 @@ namespace DominosDriverHustleComp.Server.Services
             var options = new ChromeOptions();
             options.AddArgument("--no-sandbox"); // this is a hack to work around chrome running as root. https://stackoverflow.com/a/70468050
             options.AddArgument("--headless");
+            options.AddArgument("--remote-debugging-port=9224"); // Default debug port, just make sure as its bound from the docker container
+            options.AddArgument("--remote-debugging-address=0.0.0.0");
+            options.AddArgument("--auto-open-devtools-for-tabs"); // Always do this for easier debugging
 
             var service = ChromeDriverService.CreateDefaultService("./chromedriver");
             var driver = new ChromeDriver(service, options);
