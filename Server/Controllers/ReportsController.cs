@@ -59,7 +59,19 @@ namespace DominosDriverHustleComp.Server.Controllers
             if (weeklySummary is null)
                 return [];
 
-            return weeklySummary.DeliverySummaries.Select(ds =>
+            var records = new List<ReportRecord>
+            {
+                // create average record
+                new() {
+                    IsAverageRecord = true,
+                    Name = "Average",
+                    AvgOut = weeklySummary.AvgHustleOut,
+                    AvgIn = weeklySummary.AvgHustleIn
+                }
+            };
+
+            // add driver records
+            records.AddRange(weeklySummary.DeliverySummaries.Select(ds =>
             {
                 var streaks = GetStreaksForDriver(ds.Driver, ds.WeekEnding);
 
@@ -76,7 +88,9 @@ namespace DominosDriverHustleComp.Server.Controllers
                     IsDriverDisqualified = ds.Driver.IsPermanentlyDisqualified,
                     NumOverspeeds = ds.NumOverspeeds
                 };
-            });
+            }));
+
+            return records;
         }
 
         private static PreviousWeekStats? GetPreviousStatsForDriver(Driver driver, DateTime from)

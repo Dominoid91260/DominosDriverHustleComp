@@ -84,22 +84,6 @@
 
         _headingColSpan += _showTracked ? 1 : 0;
         _headingColSpan += _showOverspeed ? 1 : 0;
-
-        InjectAverageRecord();
-    }
-
-    private void InjectAverageRecord()
-    {
-        var avgOut = _records.Average(r => r.AvgOut);
-        var avgIn = _records.Average(r => r.AvgIn);
-
-        _records.Add(new ReportRecord
-        {
-            Name = "Average",
-            AvgOut = avgOut,
-            AvgIn = avgIn,
-            IsAverageRecord = true
-        });
     }
 
     private async Task EmailImageToStore()
