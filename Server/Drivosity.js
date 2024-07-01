@@ -50,7 +50,7 @@ function getWeekDates() {
     let to = new Date();
     to.setDate(today.getDate() - today.getDay());// set the date to the last sunday
 
-    let from = new Date();
+    let from = new Date(to);
     from.setDate(to.getDate() - 6);// set the date to the monday before that
 
     return {
