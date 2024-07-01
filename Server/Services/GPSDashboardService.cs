@@ -82,6 +82,7 @@ namespace DominosDriverHustleComp.Server.Services
         public void StopBrowser()
         {
             _driver?.Quit();
+            _driver?.Dispose();
             _driver = null;
         }
     }

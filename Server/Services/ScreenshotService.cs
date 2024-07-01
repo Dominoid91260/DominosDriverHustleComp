@@ -30,7 +30,7 @@ namespace DominosDriverHustleComp.Server.Services
             options.AddArgument("--auto-open-devtools-for-tabs"); // Always do this for easier debugging
 
             var service = ChromeDriverService.CreateDefaultService("./chromedriver");
-            var driver = new ChromeDriver(service, options);
+            using var driver = new ChromeDriver(service, options);
 
             driver.Navigate().GoToUrl("http://localhost:8080/report/" + weekEnding.ToString("s"));
 
